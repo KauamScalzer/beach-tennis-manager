@@ -1,0 +1,25 @@
+<ion-content [fullscreen]="true" class="ion-padding content-dark">
+  <div class="logo-container">
+    <img src="assets/logo-champions.png" alt="Logo" />
+  </div>
+
+  <div class="text-title">
+    Visualize um campeonato
+  </div>
+
+  <ion-item class="custom-input">
+    <ion-input
+      placeholder="Código"
+      [(ngModel)]="codigo"
+      type="text"
+      fill="outline">
+    </ion-input>
+  </ion-item>
+
+  <div class="divider">Ou</div>
+
+  <ion-button expand="block" class="google-button">
+    <ion-icon slot="start" name="logo-google"></ion-icon>
+    Entrar com Google
+  </ion-button>
+</ion-content>

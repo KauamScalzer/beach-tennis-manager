@@ -1,0 +1,29 @@
+<ion-content [fullscreen]="true" class="content-dark ion-padding">
+  <div class="header">
+    <h1>Seus<br />Campeonatos</h1>
+    <ion-button fill="clear" class="add-button" (click)="adicionarCampeonato()">
+      <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <ion-item class="search-input" lines="none">
+    <ion-icon name="search-outline" slot="start"></ion-icon>
+    <ion-input
+      placeholder="Pesquisar campeonato"
+      [(ngModel)]="filtro"
+      clearInput
+    ></ion-input>
+  </ion-item>
+
+  <div class="campeonatos-list">
+    <ion-card
+      *ngFor="let campeonato of campeonatosFiltrados()"
+      button
+      (click)="abrirCampeonato(campeonato)"
+    >
+      <ion-card-content>
+        {{ campeonato }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

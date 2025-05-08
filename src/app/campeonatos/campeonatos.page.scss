@@ -1,0 +1,73 @@
+.content-dark {
+  --background: #1c1c1e;
+  color: white;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .add-button {
+      --color: white;
+      font-size: 1.5rem;
+    }
+  }
+
+  .search-input {
+    --background: transparent;
+    --color: white;
+    border: 1px solid #c6ff00;
+    border-radius: 12px;
+    padding-inline-start: 8px;
+    margin: 16px 0;
+
+    ion-input {
+      color: white;
+    }
+
+    ion-icon {
+      color: #c6ff00;
+      font-size: 1.2rem;
+    }
+  }
+
+  .campeonatos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    ion-card {
+      --background: #000;
+      border-radius: 12px;
+      text-align: center;
+
+      ion-card-content {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: white;
+      }
+    }
+  }
+}
+
+.tab-bar-dark {
+  --background: #1c1c1e;
+  --color: white;
+  --color-selected: #c6ff00;
+
+  ion-tab-button {
+    ion-icon {
+      font-size: 1.4rem;
+    }
+
+    ion-label {
+      font-size: 0.75rem;
+    }
+  }
+}

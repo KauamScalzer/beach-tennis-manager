@@ -1,0 +1,53 @@
+.content-dark {
+  --background: #1c1c1e;
+  color: white;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .add-button {
+      --color: white;
+      font-size: 1.5rem;
+    }
+  }
+
+  .start-button {
+    --background: #333;
+    --color: white;
+    border-radius: 16px;
+    margin: 16px 0;
+    text-transform: none;
+
+    .play-icon {
+      margin-right: 8px;
+      color: #c6ff00;
+    }
+  }
+
+  .equipes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    ion-card {
+      --background: #000;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #c6ff00;
+
+      ion-card-content {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: white;
+      }
+    }
+  }
+}

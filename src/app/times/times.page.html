@@ -1,0 +1,21 @@
+<ion-content [fullscreen]="true" class="content-dark ion-padding">
+  <div class="header">
+    <h1>Equipes do<br />campeonato</h1>
+    <ion-button fill="clear" class="add-button" (click)="adicionarEquipe()">
+      <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <ion-button expand="block" class="start-button" (click)="comecarCampeonato()">
+    <ion-icon name="play" class="play-icon"></ion-icon>
+    Começar campeonato
+  </ion-button>
+
+  <div class="equipes-list">
+    <ion-card *ngFor="let equipe of equipes" button (click)="abrirEquipe(equipe)">
+      <ion-card-content>
+        {{ equipe }}
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

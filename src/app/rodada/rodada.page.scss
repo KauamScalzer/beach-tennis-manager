@@ -1,0 +1,63 @@
+.content-dark {
+  --background: #1c1c1e;
+  color: white;
+  padding: 16px;
+
+  .header-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px; /* Aumentei o espaçamento inferior para destacar melhor o título */
+    
+    h1 {
+      font-size: 2rem; /* Ajustei o tamanho da fonte para ser mais visível */
+      font-weight: bold;
+      margin: 0;
+      color: white;
+    }
+
+    ion-icon {
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+
+      &:hover {
+        color: #c6ff00;
+      }
+    }
+  }
+
+  .partidas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Aumentei o espaço entre os cards para melhor separação */
+
+    .partida-card {
+      background-color: #333;
+      color: white;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #c6ff00;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: normal;
+
+      span {
+        font-size: 1.2rem;
+      }
+
+      strong {
+        font-size: 1.4rem; /* Aumentei o tamanho da pontuação para dar mais destaque */
+        font-weight: bold;
+        color: #c6ff00; /* Colorindo a pontuação para ser mais visível */
+      }
+
+      &:hover {
+        background-color: #444;
+      }
+    }
+  }
+}

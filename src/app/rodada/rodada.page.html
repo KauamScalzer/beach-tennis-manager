@@ -1,0 +1,15 @@
+<ion-content [fullscreen]="true" class="content-dark ion-padding">
+  <div class="header-center">
+    <ion-icon name="chevron-back-outline" (click)="voltarFase()"></ion-icon>
+    <h1>SEMIFINAL</h1>
+    <ion-icon name="chevron-forward-outline" (click)="avancarFase()"></ion-icon>
+  </div>
+
+  <div class="partidas-list">
+    <div class="partida-card" *ngFor="let partida of partidas">
+      <span>{{ partida.equipeA }}</span>
+      <strong>{{ partida.pontuacao }}</strong>
+      <span>{{ partida.equipeB }}</span>
+    </div>
+  </div>
+</ion-content>
