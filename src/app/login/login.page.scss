@@ -1,51 +1,20 @@
-.content-dark {
-  --background: #1c1c1e;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-container {
-  margin-top: 40px;
-  margin-bottom: 32px;
-
-  img {
-    width: 120px;
-    height: auto;
-  }
-}
-
-.text-title {
-  font-size: 1.2rem;
-  color: #ffffff;
-  font-weight: 500;
-  margin-bottom: 24px;
-}
-
 .custom-input {
   width: 80%;
   max-width: 300px;
-  --border-color: #c6ff00;
-  --highlight-color-focused: #c6ff00;
-  --background: #1c1c1e;
+  --background: transparent;
+  --highlight-color-focused: #9eff00; // verde um pouco menos neon
+  --min-height: 50px;
+
+  border: 1px solid #9eff00;
+  border-radius: 8px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
 
   ion-input {
+    width: 100%;
     color: white;
+    font-size: 16px;
+    --placeholder-color: rgba(255, 255, 255, 0.5);
   }
-}
-
-.divider {
-  color: white;
-  margin: 24px 0;
-}
-
-.google-button {
-  --background: #c6ff00;
-  --color: #000;
-  font-weight: bold;
-  text-transform: none;
-  width: 80%;
-  max-width: 300px;
-  border-radius: 32px;
 }
