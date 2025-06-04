@@ -1,0 +1,18 @@
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  ion-card {
+    --background: #000;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #c6ff00;
+
+    ion-card-content {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+    }
+  }
+}

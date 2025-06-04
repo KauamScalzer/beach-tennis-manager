@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Nova Equipe</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fechar()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Nome da equipe</ion-label>
+    <ion-input
+      [(ngModel)]="nome"
+      type="text"
+      autofocus
+    ></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="adicionar()">
+    Adicionar
+  </ion-button>
+</ion-content>

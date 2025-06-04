@@ -10,6 +10,8 @@ import {
   peopleOutline,
   arrowBackOutline,
 } from 'ionicons/icons';
+import { HeaderComponent } from '../header/header.component';
+import { CardListComponent } from '../card-list/card-list.component';
 
 addIcons({
   'search-outline': searchOutline,
@@ -22,7 +24,7 @@ addIcons({
 @Component({
   selector: 'app-campeonatos',
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, CardListComponent],
   templateUrl: './campeonatos.page.html',
   styleUrls: ['./campeonatos.page.scss'],
 })

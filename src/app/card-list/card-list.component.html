@@ -1,0 +1,11 @@
+<div class="card-list">
+  <ion-card
+    *ngFor="let item of items"
+    button
+    (click)="onItemClick.emit(item)"
+  >
+    <ion-card-content>
+      {{ item }}
+    </ion-card-content>
+  </ion-card>
+</div>

@@ -1,0 +1,24 @@
+/* add-time-modal.component.scss */
+
+ion-header {
+  --background: var(--ion-color-primary);
+  color: white;
+}
+
+ion-title {
+  font-weight: 600;
+}
+
+ion-content {
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+}
+
+ion-item {
+  margin-bottom: 20px;
+}
+
+ion-button {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
