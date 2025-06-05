@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import {
   logoGoogle,
 } from 'ionicons/icons';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services/auth/auth.service';
 import { Router } from '@angular/router';
 
 addIcons({

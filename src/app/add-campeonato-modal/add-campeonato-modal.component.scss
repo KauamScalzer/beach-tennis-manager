@@ -1,0 +1,50 @@
+/* add-campeonato-modal.component.scss */
+
+ion-header {
+  --background: var(--ion-color-primary);
+  color: white;
+}
+
+ion-title {
+  font-weight: 600;
+  color: white;
+}
+
+ion-buttons ion-button {
+  --color: white;
+}
+
+ion-content {
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+// Estilo para o ion-item quando o label está fixo
+ion-item.input-container {
+  --padding-start: 0; // Remove padding padrão do início
+  --inner-padding-end: 0; // Remove padding padrão do final
+  --background: transparent; // Fundo transparente para o item
+  border-bottom: 1px solid var(--ion-color-medium, #d7d8da); // Adiciona uma linha inferior customizada se quiser
+  margin-bottom: 20px;
+
+  ion-label {
+    min-width: 100px; /* Garante que o label tenha espaço suficiente */
+    margin-right: 10px; /* Espaço entre o label e o input */
+    font-size: 0.9em; /* Ajuste o tamanho da fonte se necessário */
+    color: var(--ion-color-medium-shade, #737373); /* Cor para o label fixo */
+  }
+
+  ion-input, ion-textarea {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 10px; /* Espaçamento interno */
+    --padding-bottom: 10px; /* Espaçamento interno */
+  }
+}
+
+
+ion-button {
+  --background: var(--ion-color-primary);
+  --color: white;
+}

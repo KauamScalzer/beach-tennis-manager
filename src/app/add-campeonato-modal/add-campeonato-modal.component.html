@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Adicionar Campeonato</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fechar()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="ion-padding">
+  <ion-item lines="none" class="input-container"> <ion-label position="fixed">Nome do Campeonato</ion-label> <ion-input
+      [(ngModel)]="nomeCampeonato"
+      type="text"
+      autofocus
+      placeholder="Digite o nome"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item lines="none" class="input-container ion-margin-top">
+    <ion-label position="fixed">Descrição (Opcional)</ion-label> <ion-textarea
+      [(ngModel)]="descricaoCampeonato"
+      placeholder="Descreva brevemente o campeonato"
+      rows="3"
+    ></ion-textarea>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="adicionar()">
+    Salvar
+  </ion-button>
+</ion-content>
