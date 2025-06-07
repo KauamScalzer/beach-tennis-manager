@@ -2,28 +2,28 @@ import { Routes, PreloadAllModules, RouterModule } from '@angular/router';
 import { redirectUnauthorizedTo, redirectLoggedInTo, canActivate } from '@angular/fire/auth-guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
-const redirectLoggedInToCampeonatos = () => redirectLoggedInTo(['campeonatos']); // Não usaremos este neste cenário, mas mantive para referência.
+const redirectLoggedInToCampeonatos = () => redirectLoggedInTo(['campeonatos']);
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login', // Redireciona para login se o caminho for vazio
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
     path: 'login',
     loadComponent: () => import('./login/login.page').then( m => m.LoginPage),
-    ...canActivate(redirectLoggedInToCampeonatos) // Se já logado, redireciona para campeonatos
+    ...canActivate(redirectLoggedInToCampeonatos)
   },
   {
     path: 'campeonatos',
     loadComponent: () => import('./campeonatos/campeonatos.page').then( m => m.CampeonatosPage),
-    ...canActivate(redirectUnauthorizedToLogin) // Requer autenticação
+    ...canActivate(redirectUnauthorizedToLogin)
   },
   {
-    path: 'times',
+    path: 'times/:campeonatoId', // Rota com parâmetro
     loadComponent: () => import('./times/times.page').then( m => m.TimesPage),
-    ...canActivate(redirectUnauthorizedToLogin) // Requer autenticação
+    ...canActivate(redirectUnauthorizedToLogin)
   },
   {
     path: 'rodada',

@@ -1,6 +1,17 @@
-<div class="header">
-  <h1 [innerHTML]="titulo"></h1>
-  <ion-button fill="clear" class="add-button" (click)="onAdd.emit()">
-    <ion-icon slot="icon-only" name="add-outline"></ion-icon>
-  </ion-button>
-</div>
+<ion-header class="ion-no-border header-dark">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button *ngIf="showBackButton" fill="clear" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title class="ion-text-center" [innerHTML]="titulo"></ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="add-button" (click)="onAdd.emit()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>

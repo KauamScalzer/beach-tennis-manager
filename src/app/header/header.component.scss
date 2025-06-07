@@ -1,16 +1,61 @@
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
-  h1 {
+ion-toolbar {
+  // Ajuste o padding interno da toolbar se necessário
+  // --padding-start: 16px;
+  // --padding-end: 16px;
+  // --padding-top: 8px;
+  // --padding-bottom: 8px;
+
+  display: flex; // Garante que os itens internos usem flexbox
+  align-items: center; // Alinha verticalmente os itens no centro
+  justify-content: space-between; // Espaça os elementos (buttons slot start, title, buttons slot end)
+
+  ion-title {
+    // Estilos para o título
     font-size: 1.8rem;
     font-weight: bold;
     margin: 0;
+    padding: 0; // Remova qualquer padding padrão que possa empurrar o texto
+    color: var(--ion-color-light); // Exemplo: use uma variável CSS do Ionic para a cor clara
+    // Ou defina diretamente a cor branca:
+    // color: white;
+
+    // Se o título estiver encapsulado em um <h1 [innerHTML]="titulo"></h1>
+    // dentro do ion-title, você pode precisar de:
+    // h1 {
+    //   font-size: 1.8rem;
+    //   font-weight: bold;
+    //   margin: 0;
+    //   color: white; // Garanta que o h1 interno também seja branco
+    // }
   }
 
-  .add-button {
-    --color: white;
+  ion-buttons {
+    // Estilos gerais para os contêineres de botões
+    // Isso é útil se você tiver mais de um botão e precisar alinhá-los
+    display: flex;
+    align-items: center;
+  }
+
+  ion-button.add-button {
+    // Estilos específicos para o botão de adicionar
+    --color: white; // Define a cor do ícone e do texto (se houver) do botão
+    font-size: 1.5rem; // Tamanho do ícone
+    // Se o botão tiver preenchimento, pode precisar ajustar --background
+    // --background: transparent; // Para um botão transparente
+  }
+
+  // Estilos para o botão de voltar, se necessário
+  ion-button[slot="start"] {
+    --color: white; // Garante que o ícone de voltar seja branco
     font-size: 1.5rem;
   }
+}
+
+// Estilos para o texto do conteúdo, se você quiser garantir o fundo escuro
+// Você já deve ter algo assim no seu global.scss ou na página principal.
+// Se seu content-dark estiver com problemas, verifique se está no escopo correto.
+.content-dark {
+  --background: #121212; // Ou qualquer cor de fundo escura que você esteja usando
+  color: white; // Garante que o texto dentro do content seja branco por padrão
 }

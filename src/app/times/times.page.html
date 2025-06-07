@@ -2,6 +2,7 @@
 
   <app-header
     titulo="Equipes do<br/>campeonato"
+    [showBackButton]="true"
     (onAdd)="adicionarEquipe()"
   ></app-header>
 
@@ -25,7 +26,7 @@
   </ion-text>
 
   <app-card-list
-    [items]="equipes"
+    [items]="getEquipeNomes()"
     (onItemClick)="abrirEquipe($event)"
   ></app-card-list>
 

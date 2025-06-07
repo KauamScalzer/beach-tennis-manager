@@ -15,8 +15,8 @@
   </ion-item>
 
   <app-card-list
-    [items]="campeonatosFiltrados()"
-    (onItemClick)="abrirCampeonato($event)"
+    [items]="getCampeonatoNomesFiltrados()"
+    (onItemClick)="handleCampeonatoClick($event)"
   ></app-card-list>
 
 </ion-content>
