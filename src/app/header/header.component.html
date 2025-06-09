@@ -9,7 +9,10 @@
     <ion-title class="ion-text-center" [innerHTML]="titulo"></ion-title>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" class="add-button" (click)="onAdd.emit()">
+      <ion-button *ngIf="showCopyButton" fill="clear" (click)="onCopy.emit()">
+        <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="showAddButton" fill="clear" class="add-button" (click)="onAdd.emit()">
         <ion-icon slot="icon-only" name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>

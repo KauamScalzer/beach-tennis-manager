@@ -1,9 +1,9 @@
 <ion-content [fullscreen]="true" class="content-dark ion-padding">
 
   <app-header
-    [titulo]="headerTitle" [showBackButton]="true"
-    (onAdd)="isOwner && advancePhase()"
-  ></app-header>
+    [titulo]="headerTitle"
+    [showBackButton]="true"
+    [showAddButton]="false"      [showCopyButton]="true"     (onCopy)="copyPublicLink()" ></app-header>
 
   <div class="phase-navigation ion-text-center">
     <ion-button fill="clear" (click)="goToPreviousPhase()" [disabled]="faseAtualOrdem === 1">

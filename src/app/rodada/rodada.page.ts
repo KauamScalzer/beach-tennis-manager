@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule, LoadingController, AlertController } from '@ionic/angular';
+import { IonicModule, LoadingController, AlertController, Platform } from '@ionic/angular'; // 🔥 Importe Platform
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, arrowForwardOutline, trophyOutline } from 'ionicons/icons';
+import {
+  arrowBackOutline,
+  arrowForwardOutline,
+  trophyOutline,
+  copyOutline, // 🔥 Importe este novo ícone (ou 'shareOutline')
+} from 'ionicons/icons';
 
 import { IMatch } from '../interfaces/imatch';
 import { MatchService } from '../services/match/match.service';
@@ -18,6 +23,7 @@ addIcons({
   'arrow-back-outline': arrowBackOutline,
   'arrow-forward-outline': arrowForwardOutline,
   'trophy-outline': trophyOutline,
+  'copy-outline': copyOutline, // 🔥 Adicione este ícone
 });
 
 interface ITime {
@@ -53,15 +59,12 @@ export class RodadaPage implements OnInit {
   isOwner: boolean = false;
   currentUserUid: string | null = null;
 
-  // 🔥 Adapte as fases para seu campeonato (Oitavas, Quartas, Semifinal, Final)
-  // Certifique-se que o nome da chave corresponde ao nome do valor.
   phaseOrderMap: { [key: string]: number } = {
     'Rodada 1': 1,
     'Quartas de Final': 2,
     'Semifinal': 3,
     'Final': 4,
   };
-  // Ordem reversa para facilitar a busca do nome da fase pela ordem numérica
   orderPhaseMap: { [key: number]: string } = {
     1: 'Rodada 1',
     2: 'Quartas de Final',
@@ -78,7 +81,8 @@ export class RodadaPage implements OnInit {
     private alertCtrl: AlertController,
     private matchService: MatchService,
     private campeonatoService: CampeonatoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private platform: Platform, // 🔥 Injete Platform
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -106,6 +110,12 @@ export class RodadaPage implements OnInit {
         this.faseAtualNome = campeonato.faseAtual || this.orderedPhases[0];
         this.faseAtualOrdem = this.phaseOrderMap[this.faseAtualNome];
         this.isOwner = this.currentUserUid === campeonato.userId;
+        // Se a fase atual do campeonato não estiver definida, usa a primeira fase mapeada
+        if (!campeonato.faseAtual) {
+          console.warn('Campeonato sem faseAtual definida. Redirecionando para a primeira fase mapeada.');
+          this.router.navigate(['/publico', publicAccessCode, this.orderedPhases[0]], { replaceUrl: true });
+          return;
+        }
         console.log('Campeonato encontrado pelo código:', campeonato);
         await this.loadMatches();
       } else {
@@ -225,7 +235,6 @@ export class RodadaPage implements OnInit {
     if (team === 'A') match.placarTimeA = newScore;
     else match.placarTimeB = newScore;
 
-    // 🔥 REGRA DE VITÓRIA: Melhor de 3, quem fizer 2 pontos ganha
     if (match.placarTimeA >= 2) {
       updatedData.vencedorId = match.timeAId;
       updatedData.vencedorNome = match.timeANome;
@@ -256,11 +265,10 @@ export class RodadaPage implements OnInit {
     }
   }
 
-  // 🔥 LÓGICA DE AVANÇAR FASE
   async advancePhase() {
     if (!this.campeonatoId || !this.faseAtualNome) return;
 
-    if (!this.canAdvancePhase) { // Este controle já é feito no HTML, mas é bom ter aqui também
+    if (!this.canAdvancePhase) {
       const alert = await this.alertCtrl.create({
         header: 'Atenção',
         message: 'Todas as partidas da fase atual devem estar finalizadas para avançar.',
@@ -279,33 +287,28 @@ export class RodadaPage implements OnInit {
       const currentPhaseMatches = this.matches;
       const winners: ITime[] = [];
 
-      // Coleta todos os vencedores da fase atual
       for (const match of currentPhaseMatches) {
         if (match.vencedorId && match.vencedorNome) {
           winners.push({
             id: match.vencedorId,
             nome: match.vencedorNome,
-            campeonatoId: this.campeonatoId // Garante que o ID do campeonato está no objeto ITime
+            campeonatoId: this.campeonatoId
           });
         }
       }
 
-      // ORDENA OS VENCEDORES PARA UM SORTEIO JUSTO NA PRÓXIMA FASE
-      // É importante re-embaralhar os vencedores antes de formar os próximos confrontos
       const shuffledWinners = [...winners].sort(() => Math.random() - 0.5);
 
-      // 🔥 LÓGICA DE FINALIZAÇÃO DO CAMPEONATO
-      // Se há apenas um vencedor E é a última fase mapeada, então temos um campeão
       if (shuffledWinners.length === 1 && this.isLastPhase) {
         const campeao = shuffledWinners[0];
         await this.campeonatoService.updateCampeonato(this.campeonatoId, {
           status: 'finalizado',
           campeaoId: campeao.id,
           campeaoNome: campeao.nome,
-          faseAtual: 'Finalizado' // Ou o nome que você quiser para a fase de finalização
+          faseAtual: 'Finalizado'
         });
-        this.campeaoNome = campeao.nome; // Atualiza localmente para exibir o campeão
-        this.canAdvancePhase = false; // Desabilita o botão
+        this.campeaoNome = campeao.nome;
+        this.canAdvancePhase = false;
         const alert = await this.alertCtrl.create({
           header: 'Campeão!',
           message: `${campeao.nome} é o grande campeão! Parabéns!`,
@@ -313,16 +316,13 @@ export class RodadaPage implements OnInit {
         });
         await alert.present();
         loading.dismiss();
-        return; // O campeonato terminou, não há próxima fase
+        return;
       }
 
-
-      // Determine a próxima fase
       const nextPhaseOrder = this.faseAtualOrdem + 1;
-      const nextPhaseName = this.orderedPhases[nextPhaseOrder - 1]; // Array é 0-indexed
+      const nextPhaseName = this.orderedPhases[nextPhaseOrder - 1];
 
       if (!nextPhaseName) {
-        // Se não há uma próxima fase mapeada (ex: depois da Final no phaseOrderMap)
         const alert = await this.alertCtrl.create({
           header: 'Fim do Campeonato',
           message: 'Não há mais fases para avançar. O campeonato está completo!',
@@ -333,11 +333,9 @@ export class RodadaPage implements OnInit {
         return;
       }
 
-      // Lógica para gerar partidas da próxima fase com os vencedores
       const newMatches: IMatch[] = [];
       let winnerIndex = 0;
 
-      // Lidando com byes para a próxima fase
       let numRealMatchesNextPhase = Math.floor(shuffledWinners.length / 2);
       let numByesNextPhase = shuffledWinners.length % 2;
 
@@ -348,7 +346,6 @@ export class RodadaPage implements OnInit {
 
       let partidaNaFaseCounter = 1;
 
-      // Criar partidas 1x1 para a próxima fase
       for (let i = 0; i < numRealMatchesNextPhase; i++) {
         const timeA = shuffledWinners[i * 2];
         const timeB = shuffledWinners[i * 2 + 1];
@@ -371,7 +368,6 @@ export class RodadaPage implements OnInit {
         newMatches.push({ ...match, id: matchId });
       }
 
-      // Criar partidas de BYE para a próxima fase
       for (const winnerBye of winnersWithByesNextPhase) {
         const byeMatch: IMatch = {
           campeonatoId: this.campeonatoId,
@@ -391,7 +387,6 @@ export class RodadaPage implements OnInit {
         newMatches.push({ ...byeMatch, id: byeMatchId });
       }
 
-      // Atualizar o campeonato com a nova fase atual
       await this.campeonatoService.updateCampeonato(this.campeonatoId, { faseAtual: nextPhaseName });
 
       const alert = await this.alertCtrl.create({
@@ -401,14 +396,98 @@ export class RodadaPage implements OnInit {
       });
       await alert.present();
 
-      // Redireciona para a nova fase
       this.router.navigate(['/rodada', this.campeonatoId, nextPhaseName]);
 
     } catch (error) {
       console.error('Erro ao avançar fase:', error);
       const alert = await this.alertCtrl.create({
         header: 'Erro',
-        message: 'Não foi possível avançar para a próxima fase. Tente novamente.',
+        message: 'Não foi possível avançar para a próxima fase.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  // 🔥 NOVO MÉTODO: Copiar o link público
+  async copyPublicLink() {
+    if (!this.campeonatoId) {
+      const alert = await this.alertCtrl.create({
+        header: 'Erro',
+        message: 'Não foi possível gerar o link: ID do campeonato ausente.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Gerando link...',
+    });
+    await loading.present();
+
+    try {
+      const campeonato = await this.campeonatoService.getCampeonatoById(this.campeonatoId);
+      if (!campeonato || !campeonato.codigoAcessoPublico) {
+        const alert = await this.alertCtrl.create({
+          header: 'Erro',
+          message: 'Campeonato ou código de acesso público não encontrado.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+        return;
+      }
+
+      // Obtém o host atual da URL (ex: "http://localhost:8100" ou "https://seusite.com")
+      const currentHost = window.location.origin;
+      const publicLink = `${currentHost}/publico/${campeonato.codigoAcessoPublico}`;
+
+      // Tenta copiar para a área de transferência
+      if (this.platform.is('capacitor') || this.platform.is('cordova')) {
+        // Para aplicativos nativos (Capacitor/Cordova)
+        // Você precisaria de um plugin como '@capacitor/clipboard'
+        // npm install @capacitor/clipboard
+        // npx cap sync
+        // import { Clipboard } from '@capacitor/clipboard';
+        // await Clipboard.write({ string: publicLink });
+        const alert = await this.alertCtrl.create({
+          header: 'Link Copiado!',
+          message: `Link: ${publicLink}. Funcionalidade de cópia em app nativo requer plugin.`,
+          buttons: ['OK'],
+        });
+        await alert.present();
+      } else if (navigator.clipboard) {
+        // Para navegadores web modernos
+        await navigator.clipboard.writeText(publicLink);
+        const alert = await this.alertCtrl.create({
+          header: 'Link Copiado!',
+          message: `O link foi copiado para a área de transferência: ${publicLink}`,
+          buttons: ['OK'],
+        });
+        await alert.present();
+      } else {
+        // Fallback para navegadores antigos ou onde a API Clipboard não está disponível
+        const dummyElement = document.createElement('textarea');
+        document.body.appendChild(dummyElement);
+        dummyElement.value = publicLink;
+        dummyElement.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyElement);
+
+        const alert = await this.alertCtrl.create({
+          header: 'Link Copiado!',
+          message: `O link foi copiado para a área de transferência (via fallback): ${publicLink}`,
+          buttons: ['OK'],
+        });
+        await alert.present();
+      }
+    } catch (error) {
+      console.error('Erro ao copiar link:', error);
+      const alert = await this.alertCtrl.create({
+        header: 'Erro',
+        message: 'Não foi possível copiar o link. Tente manualmente.',
         buttons: ['OK'],
       });
       await alert.present();
