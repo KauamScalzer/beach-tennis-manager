@@ -9,16 +9,15 @@
   <ion-button
   expand="block"
   class="start-button"
-  (click)="comecarCampeonato()"
-  [disabled]="equipes.length < 2"
-  >
-    <ion-icon name="play" class="play-icon"></ion-icon>
-    Começar campeonato
+  (click)="handleStartOrViewCampeonato()"
+  [disabled]="!hasStarted && equipes.length < 2" >
+    <ion-icon name="play" class="play-icon" *ngIf="!hasStarted"></ion-icon>
+    {{ hasStarted ? 'Visualizar Campeonato' : 'Começar Campeonato' }}
   </ion-button>
 
   <ion-text
     color="danger"
-    *ngIf="equipes.length < 2"
+    *ngIf="!hasStarted && equipes.length < 2"
   >
     <p class="ion-text-center">
       Adicione pelo menos 2 equipes para começar o campeonato.
