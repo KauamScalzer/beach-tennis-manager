@@ -11,21 +11,15 @@ import { AddTimeModalComponent } from '../add-time-modal/add-time-modal.componen
 import { TimeService } from '../services/time/time.service';
 import { MatchService } from '../services/match/match.service';
 import { CampeonatoService } from '../services/campeonato/campeonato.service';
-import { IMatch } from '../interfaces/imatch'; // Importe IMatch
-import { ICampeonato } from '../interfaces/icampeonato'; // Importe ICampeonato
+import { IMatch } from '../interfaces/imatch';
+import { ICampeonato } from '../interfaces/icampeonato';
+import { ITime } from '../interfaces/itime'; // Certifique-se de que ITime está sendo importado do seu arquivo interfaces/itime.ts
 
 addIcons({
   'add-outline': addOutline,
   'play': play,
   'arrow-back-outline': arrowBackOutline,
 });
-
-// Sua interface ITime existente
-interface ITime {
-  id: string;
-  nome: string;
-  campeonatoId: string;
-}
 
 @Component({
   selector: 'app-times',
@@ -41,35 +35,41 @@ interface ITime {
   styleUrls: ['./times.page.scss'],
 })
 export class TimesPage implements OnInit {
-  // Removi as propriedades 'filtro' e 'campeonatos' se elas não são usadas diretamente nesta página,
-  // ou você pode mantê-las se forem usadas em outra parte do template não mostrada aqui.
-  // filtro = '';
-  // campeonatos: ICampeonato[] = [];
-
   equipes: ITime[] = [];
   campeonatoId: string | null = null;
   campeonato: ICampeonato | null = null;
   hasStarted: boolean = false;
 
-  // Mapeamento de nome de fase para ordem
-  // Esta parte é importante para definir a ordem das fases do seu campeonato.
-  // Adapte os nomes das fases para o seu campeonato (ex: 'Oitavas', 'Quartas', 'Semifinal', 'Final').
-  // A Rodada 1 sempre será a fase de ordem 1.
+  // 🔥 Mapeamento de nome de fase para ordem (1=Final, 2=Semifinal, etc.)
   private phaseOrderMap: { [key: string]: number } = {
-    'Rodada 1': 1,
-    'Quartas de Final': 2,
-    'Semifinal': 3,
-    'Final': 4,
+    'Final': 1,
+    'Semifinal': 2,
+    'Quartas de Final': 3,
+    'Oitavas de Final': 4,
+    '16-avos de Final': 5, // Para campeonatos com até 32 times
+    '32-avos de Final': 6, // Para campeonatos com até 64 times (exemplo)
+    // Adicione mais fases se precisar suportar mais times
   };
-  // Podemos ter um array de fases para facilitar a navegação em ordem
-  private orderedPhases: string[] = Object.keys(this.phaseOrderMap).sort((a, b) => this.phaseOrderMap[a] - this.phaseOrderMap[b]);
 
+  // 🔥 Mapeamento de ordem para nome de fase
+  private orderPhaseMap: { [key: number]: string } = {
+    1: 'Final',
+    2: 'Semifinal',
+    3: 'Quartas de Final',
+    4: 'Oitavas de Final',
+    5: '16-avos de Final',
+    6: '32-avos de Final', // Exemplo
+    // Adicione mais fases aqui
+  };
+
+  // 🔥 orderedPhases agora ordena os nomes das fases com base na sua ordem numérica (crescente)
+  private orderedPhases: string[] = Object.keys(this.phaseOrderMap).sort((a, b) => this.phaseOrderMap[a] - this.phaseOrderMap[b]);
 
   constructor(
     private modalCtrl: ModalController,
     private activatedRoute: ActivatedRoute,
     private timeService: TimeService,
-    private matchService: MatchService, // Certifique-se de que está injetado
+    private matchService: MatchService,
     private campeonatoService: CampeonatoService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
@@ -232,7 +232,7 @@ export class TimesPage implements OnInit {
     }
   }
 
-  // 🔥 LÓGICA DE INICIAR CAMPEONATO E GERAR PRIMEIRA RODADA
+  // 🔥 LÓGICA DE INICIAR CAMPEONATO E GERAR PRIMEIRA RODADA COM FASES DINÂMICAS
   private async startCampeonato() {
     if (!this.campeonatoId) {
       const alert = await this.alertCtrl.create({
@@ -255,38 +255,56 @@ export class TimesPage implements OnInit {
     }
 
     const loading = await this.loadingCtrl.create({
-      message: 'Sorteando equipes e criando a tabela da Rodada 1...',
+      message: 'Sorteando equipes e criando a tabela inicial...',
     });
     await loading.present();
 
     try {
       // 1. Embaralhar as equipes
       const shuffledTeams = [...this.equipes].sort(() => Math.random() - 0.5);
-      console.log('Equipes embaralhadas para Rodada 1:', shuffledTeams.map(t => t.nome));
+      console.log('Equipes embaralhadas:', shuffledTeams.map(t => t.nome));
 
-      const matchesCreated: IMatch[] = [];
+      // 🔥 Lógica para determinar a fase inicial com base no número de times
       const numTeams = shuffledTeams.length;
-      const initialPhaseName = this.orderedPhases[0]; // Pega o nome da primeira fase (ex: 'Rodada 1')
-      const initialPhaseOrder = this.phaseOrderMap[initialPhaseName]; // Pega a ordem numérica
+      let effectiveNumTeamsForRound = 2; // Começa na fase Final (requer 2 times)
+      let initialPhaseOrder = 1; // Ordem da fase (1 = Final)
 
-      // Lógica para lidar com Byes
-      // Calcula o número de partidas que realmente ocorrerão (com 2 times)
-      let numRealMatches = Math.floor(numTeams / 2);
-      // Calcula o número de Byes (times que avançam direto)
-      let numByes = numTeams % 2;
-
-      // Separa os times que terão Byes (os últimos na lista embaralhada, por simplicidade)
-      const teamsWithByes: ITime[] = [];
-      for (let i = 0; i < numByes; i++) {
-        teamsWithByes.push(shuffledTeams.pop()!); // .pop() remove do final e retorna o elemento
+      // Encontra a menor potência de 2 que pode acomodar todos os times
+      // e determina a ordem da fase correspondente.
+      while (effectiveNumTeamsForRound < numTeams) {
+        effectiveNumTeamsForRound *= 2;
+        initialPhaseOrder++;
       }
 
-      let partidaNaFaseCounter = 1; // Contador para a ordem das partidas na fase
+      // Garante que a ordem da fase existe no nosso mapa.
+      // Se tivermos muitos times e não tivermos mapeado fases suficientes (ex: 64 times),
+      // usará a fase mapeada mais "profunda" disponível.
+      if (!this.orderPhaseMap[initialPhaseOrder]) {
+          initialPhaseOrder = Math.max(...Object.values(this.phaseOrderMap)); // Pega a ordem mais alta mapeada
+          console.warn(`Número de times (${numTeams}) excede fases mapeadas. Usando a fase inicial mais profunda: ${this.orderPhaseMap[initialPhaseOrder]}`);
+      }
 
-      // 2. Criar partidas 1x1 para a primeira rodada
+      const initialPhaseName = this.orderPhaseMap[initialPhaseOrder];
+
+
+      const matchesCreated: IMatch[] = [];
+      // Quantidade de jogos 1x1
+      let numRealMatches = Math.floor(numTeams / 2);
+      // Quantidade de Byes (times que avançam direto)
+      let numByes = numTeams % 2;
+
+      // Separa os times que terão Byes (os últimos na lista embaralhada)
+      const teamsWithByes: ITime[] = [];
+      for (let i = 0; i < numByes; i++) {
+        teamsWithByes.push(shuffledTeams.pop()!);
+      }
+
+      let partidaNaFaseCounter = 1;
+
+      // 2. Criar partidas 1x1 para a fase inicial
       for (let i = 0; i < numRealMatches; i++) {
-        const timeA = shuffledTeams[i * 2]; // Pega o primeiro time do par
-        const timeB = shuffledTeams[i * 2 + 1]; // Pega o segundo time do par
+        const timeA = shuffledTeams[i * 2];
+        const timeB = shuffledTeams[i * 2 + 1];
 
         const match: IMatch = {
           campeonatoId: this.campeonatoId,
@@ -306,42 +324,40 @@ export class TimesPage implements OnInit {
         matchesCreated.push({ ...match, id: matchId });
       }
 
-      // 3. Criar "partidas" de BYE (onde o time avança automaticamente)
+      // 3. Criar "partidas" de BYE
       for (const teamBye of teamsWithByes) {
         const byeMatch: IMatch = {
           campeonatoId: this.campeonatoId,
-          fase: initialPhaseName, // Ainda é da primeira fase
+          fase: initialPhaseName,
           ordemFase: initialPhaseOrder,
-          partidaNaFase: partidaNaFaseCounter++, // Continua a ordem da partida
+          partidaNaFase: partidaNaFaseCounter++,
           timeAId: teamBye.id,
           timeANome: teamBye.nome,
-          timeBId: null, // Indica que não tem adversário
+          timeBId: null,
           timeBNome: null,
           vencedorId: teamBye.id, // O próprio time já é o vencedor
           vencedorNome: teamBye.nome,
-          placarTimeA: 0, // Pode ser 0 ou um valor indicativo de bye
+          placarTimeA: 0,
           placarTimeB: 0,
         };
         const byeMatchId = await this.matchService.addMatch(byeMatch);
         matchesCreated.push({ ...byeMatch, id: byeMatchId });
       }
 
-
-      // 4. Atualizar o campeonato no Firebase para indicar que ele foi iniciado
+      // 4. Atualizar o campeonato no Firebase
       await this.campeonatoService.updateCampeonato(this.campeonatoId, {
         faseAtual: initialPhaseName,
         status: 'em_andamento'
       });
-      // Atualiza o objeto local 'campeonato' para que a tela reflita o estado imediatamente
       if (this.campeonato) {
         this.campeonato.faseAtual = initialPhaseName;
         this.campeonato.status = 'em_andamento';
       }
-      this.hasStarted = true; // Atualiza a flag
+      this.hasStarted = true;
 
       const alert = await this.alertCtrl.create({
         header: 'Sucesso!',
-        message: `Campeonato iniciado! A ${initialPhaseName} foi criada.`,
+        message: `Campeonato iniciado! A fase de ${initialPhaseName} foi criada.`,
         buttons: ['OK'],
       });
       await alert.present();
@@ -350,7 +366,7 @@ export class TimesPage implements OnInit {
       this.router.navigate(['/rodada', this.campeonatoId, initialPhaseName]);
 
     } catch (error) {
-      console.error('Erro ao iniciar campeonato ou criar tabela da Rodada 1:', error);
+      console.error('Erro ao iniciar campeonato ou criar tabela inicial:', error);
       const alert = await this.alertCtrl.create({
         header: 'Erro',
         message: 'Não foi possível iniciar o campeonato. Tente novamente.',
