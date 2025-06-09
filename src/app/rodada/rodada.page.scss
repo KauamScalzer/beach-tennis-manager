@@ -1,70 +1,143 @@
-.content-dark {
-  --background: #1c1c1e;
-  background-color: var(--background);
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 16px;
+ion-content {
+  --background: var(--ion-color-dark, #121212); // Garante fundo escuro
+  color: var(--ion-color-light, white); // Cor do texto padrão
 
-  .header-center {
-    margin-top: 100px; // posiciona o "SEMIFINAL" mais pra baixo
-    margin-bottom: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-
+  // Estilos para o Header (já devem estar corretos se você usou o header.component.scss)
+  // Caso o título ainda não esteja branco ou o layout do header esteja errado,
+  // verifique seu `header.component.scss` para as regras de ion-toolbar e ion-title.
+  .header {
     h1 {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: white;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      color: white; // Garante branco
+    }
+  }
+
+  .phase-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px; // Adiciona um padding para as bordas
+
+    h2 {
       margin: 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white; // Garante que o H2 do título da fase seja branco
+    }
+    ion-button {
+      --color: var(--ion-color-light); // Botões de navegação (setas) brancos
+    }
+  }
+
+  .winner-display {
+    text-align: center;
+    margin-top: 20px; // Espaçamento
+    ion-icon {
+      font-size: 2.5rem;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    h3 {
+      display: inline-block;
+      margin: 0;
+      vertical-align: middle;
+      font-weight: bold;
+    }
+  }
+
+  .match-list {
+    margin-top: 20px; // Espaçamento do topo
+  }
+
+  .match-card {
+    --background: #2a2a2a; // Fundo do card da partida
+    color: var(--ion-color-light); // Cor do texto dentro do card
+    margin-bottom: 15px; // Espaçamento entre os cards
+    border-radius: 10px; // Cantos arredondados para os cards
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra sutil para destacar
+
+    ion-card-content {
+      padding: 15px;
     }
 
-    ion-icon {
-      font-size: 1.5rem;
-      color: white;
-      cursor: pointer;
+    .match-teams-score {
+      display: flex;
+      justify-content: space-between; // Espaça timeA, VS, timeB
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-      &:hover {
-        color: #c6ff00;
+    .team-score {
+      display: flex;
+      flex-direction: column; // Nome do time em cima, placar/controles embaixo
+      align-items: center; // Centraliza time e placar horizontalmente
+      flex: 1; // Ocupa espaço igual
+      text-align: center;
+      padding: 0 5px; // Pequeno padding interno
+
+      ion-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 5px; // Espaço entre nome do time e placar
+        color: white; // Garante que o nome do time seja branco por padrão
+      }
+
+      .score-controls {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+
+        ion-button {
+          --padding-start: 5px;
+          --padding-end: 5px;
+          --min-width: 30px; // Garante que o botão não encolha demais
+          --height: 30px; // Altura do botão
+          font-size: 1.2rem; // Tamanho do ícone +/-
+          --color: var(--ion-color-primary, #3880ff); // Cor dos botões de placar
+        }
+
+        ion-text { // O número do placar
+          font-size: 1.8rem; // Tamanho maior para o placar
+          font-weight: bolder;
+          margin: 0 10px;
+          color: white; // Garante que o placar seja branco
+        }
+      }
+    }
+
+    .vs-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0 10px; // Espaçamento ao redor do "VS"
+      color: var(--ion-color-medium, #92949c); // Cor mais suave para "VS"
+    }
+
+    .match-winner {
+      display: block; // Garante que ocupe a largura total
+      text-align: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1); // Linha separadora
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--ion-color-light); // "Vencedor:" texto
+      span { // Este span é para compatibilidade, o [color] é em ion-text agora
+        font-size: 1.1rem;
+        font-weight: bolder;
+        color: var(--ion-color-success, #10dc60); // Cor verde para o nome do vencedor
       }
     }
   }
 
-  .partidas-list {
-    display: flex;
-    flex-direction: column;
-    gap: 48px; // mais espaço entre os cards
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 40px;
+  .advance-button {
+    margin-top: 30px; // Espaçamento maior antes do botão de avançar
+    --background: var(--ion-color-primary, #3880ff); // Cor do botão de avançar
+    --color: white; // Cor do texto do botão
+  }
 
-    .partida-card {
-      background-color: #2c2c2e;
-      color: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid #c6ff00;
-
-      span {
-        font-size: 1.2rem;
-      }
-
-      strong {
-        font-size: 1.6rem;
-        font-weight: bold;
-        color: #c6ff00;
-        margin: 0 12px;
-      }
-    }
+  ion-text[color="danger"] { // Mensagem de erro "Finalize todas..."
+    display: block;
+    text-align: center;
+    margin-top: 15px;
   }
 }

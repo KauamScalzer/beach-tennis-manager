@@ -5,12 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import {
   logoGoogle,
+  eyeOutline, // 🔥 Importe este ícone para o botão de visualização
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth/auth.service';
 import { Router } from '@angular/router';
+import { CampeonatoService } from '../services/campeonato/campeonato.service'; // 🔥 Importe o CampeonatoService
 
 addIcons({
   'logo-google': logoGoogle,
+  'eye-outline': eyeOutline, // 🔥 Adicione este ícone
 });
 
 @Component({
@@ -22,13 +25,14 @@ addIcons({
 })
 export class LoginPage {
   constructor(
-    private authService: AuthService, // Injete o AuthService
+    private authService: AuthService,
     private router: Router,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private campeonatoService: CampeonatoService, // 🔥 Injete o CampeonatoService
   ) {}
 
-  codigo = '';
+  codigo = ''; // Corresponde ao ngModel do input
 
   async signInWithGoogle() {
     const loading = await this.loadingController.create({
@@ -37,7 +41,7 @@ export class LoginPage {
     await loading.present();
 
     try {
-      const result = await this.authService.signInWithGoogle(); // Chama o método do serviço
+      const result = await this.authService.signInWithGoogle();
 
       console.log('Login com Google bem-sucedido:', result.user);
       this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
@@ -65,6 +69,61 @@ export class LoginPage {
       });
       await alert.present();
 
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  // 🔥 NOVO MÉTODO: Acessar campeonato pelo código público
+  async viewCampeonatoByCode() {
+    const trimmedCodigo = this.codigo.trim(); // Remove espaços em branco
+    if (!trimmedCodigo) {
+      const alert = await this.alertController.create({
+        header: 'Atenção',
+        message: 'Por favor, digite o código do campeonato.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Buscando campeonato...',
+    });
+    await loading.present();
+
+    try {
+      // Busca o campeonato usando o código de acesso público
+      const campeonato = await this.campeonatoService.getCampeonatoByCodigoAcesso(trimmedCodigo);
+
+      if (campeonato && campeonato.faseAtual) { // Verifica se o campeonato existe e já tem uma fase iniciada
+        console.log('Campeonato encontrado pelo código:', campeonato);
+        // Redireciona para a rota pública da RodadaPage
+        this.router.navigate(['/publico', trimmedCodigo]);
+      } else if (campeonato && !campeonato.faseAtual) {
+        const alert = await this.alertController.create({
+          header: 'Campeonato Não Iniciado',
+          message: 'Este campeonato ainda não foi iniciado pelo seu organizador.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      }
+      else {
+        const alert = await this.alertController.create({
+          header: 'Erro',
+          message: 'Código de campeonato inválido ou não encontrado.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      }
+    } catch (error) {
+      console.error('Erro ao buscar campeonato pelo código:', error);
+      const alert = await this.alertController.create({
+        header: 'Erro',
+        message: 'Não foi possível buscar o campeonato. Tente novamente.',
+        buttons: ['OK'],
+      });
+      await alert.present();
     } finally {
       loading.dismiss();
     }

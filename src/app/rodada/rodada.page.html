@@ -1,15 +1,83 @@
 <ion-content [fullscreen]="true" class="content-dark ion-padding">
-  <div class="header-center">
-    <ion-icon name="chevron-back-outline" (click)="voltarFase()"></ion-icon>
-    <h1>SEMIFINAL</h1>
-    <ion-icon name="chevron-forward-outline" (click)="avancarFase()"></ion-icon>
+
+  <app-header
+    [titulo]="headerTitle" [showBackButton]="true"
+    (onAdd)="isOwner && advancePhase()"
+  ></app-header>
+
+  <div class="phase-navigation ion-text-center">
+    <ion-button fill="clear" (click)="goToPreviousPhase()" [disabled]="faseAtualOrdem === 1">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-button>
+    <ion-text color="light" class="ion-text-capitalize">
+      <h2>{{ faseAtualNome }}</h2>
+    </ion-text>
+    <ion-button fill="clear" (click)="goToNextPhaseInHistory()" [disabled]="!hasNextPhaseInHistory"> <ion-icon name="arrow-forward-outline"></ion-icon>
+    </ion-button>
   </div>
 
-  <div class="partidas-list">
-    <div class="partida-card" *ngFor="let partida of partidas">
-      <span>{{ partida.equipeA }}</span>
-      <strong>{{ partida.pontuacao }}</strong>
-      <span>{{ partida.equipeB }}</span>
-    </div>
+  <div *ngIf="campeaoNome" class="ion-text-center ion-margin-top winner-display">
+    <ion-icon name="trophy-outline" color="warning"></ion-icon>
+    <ion-text color="warning">
+      <h3>Campeão: {{ campeaoNome }}</h3>
+    </ion-text>
   </div>
+
+  <div class="match-list ion-margin-top">
+    <ion-card *ngFor="let match of matches" class="match-card">
+      <ion-card-content>
+        <div class="match-teams-score">
+          <div class="team-score">
+            <ion-text [color]="match.vencedorId === match.timeAId ? 'success' : 'light'">
+              {{ match.timeANome }}
+            </ion-text>
+            <div class="score-controls" *ngIf="isOwner && !match.vencedorId">
+              <ion-button size="small" fill="clear" (click)="updateScore(match, 'A', -1)" [disabled]="match.placarTimeA === 0">-</ion-button>
+              <ion-text>{{ match.placarTimeA }}</ion-text>
+              <ion-button size="small" fill="clear" (click)="updateScore(match, 'A', 1)">+</ion-button>
+            </div>
+            <ion-text *ngIf="!isOwner || match.vencedorId">{{ match.placarTimeA }}</ion-text>
+          </div>
+
+          <ion-text class="vs-text" color="medium">VS</ion-text>
+
+          <div class="team-score">
+            <ion-text [color]="match.vencedorId === match.timeBId ? 'success' : 'light'">
+              {{ match.timeBNome || 'BYE' }}
+            </ion-text>
+            <div class="score-controls" *ngIf="isOwner && !match.vencedorId && match.timeBId">
+              <ion-button size="small" fill="clear" (click)="updateScore(match, 'B', -1)" [disabled]="match.placarTimeB === 0">-</ion-button>
+              <ion-text>{{ match.placarTimeB }}</ion-text>
+              <ion-button size="small" fill="clear" (click)="updateScore(match, 'B', 1)">+</ion-button>
+            </div>
+            <ion-text *ngIf="!isOwner || match.vencedorId">{{ match.placarTimeB }}</ion-text>
+          </div>
+        </div>
+
+        <ion-text *ngIf="match.vencedorNome" class="match-winner">
+          Vencedor: <ion-text [color]="'success'">{{ match.vencedorNome }}</ion-text> </ion-text>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ion-button
+    expand="block"
+    class="advance-button ion-margin-top"
+    (click)="isOwner && advancePhase()"
+    [disabled]="!canAdvancePhase || campeaoNome || !isOwner"
+    *ngIf="isOwner"
+  >
+    <ion-icon name="arrow-forward-outline"></ion-icon>
+    {{ isLastPhase ? 'Finalizar Campeonato' : 'Avançar Fase' }}
+  </ion-button>
+
+  <ion-text
+    color="danger"
+    *ngIf="!canAdvancePhase && matches.length > 0 && !campeaoNome && isOwner"
+  >
+    <p class="ion-text-center">
+      Finalize todas as partidas para avançar de fase.
+    </p>
+  </ion-text>
+
 </ion-content>
