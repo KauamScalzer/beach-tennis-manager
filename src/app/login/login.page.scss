@@ -1,20 +1,97 @@
-.custom-input {
-  width: 80%;
-  max-width: 300px;
-  --background: transparent;
-  --highlight-color-focused: #9eff00; // verde um pouco menos neon
-  --min-height: 50px;
+ion-content.content-dark {
+  --background: #121212; // Um tom de preto/cinza escuro comum em apps
 
-  border: 1px solid #9eff00;
-  border-radius: 8px;
-  padding: 0 12px;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: 100%;
+}
+.scroll-y{
+  display: contents;
+}
+.logo-container {
+  margin-bottom: 40px;
+  img {
+    width: 120px;
+    height: auto;
+  }
+}
+
+.text-title {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.custom-input {
+  width: 100%;
+  max-width: 320px;
+  --background: #1e1e1e;
+  --min-height: 55px;
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease-in-out;
 
   ion-input {
     width: 100%;
     color: white;
     font-size: 16px;
-    --placeholder-color: rgba(255, 255, 255, 0.5);
+  }
+
+  &.ion-focused {
+    border-color: #9eff00;
+  }
+}
+
+ion-button {
+  --background: #9eff00;
+  --color: #121212;
+  --border-radius: 10px;
+  --box-shadow: 0 4px 15px rgba(158, 255, 0, 0.25);
+  --font-weight: bold;
+  height: 50px;
+  max-width: 320px;
+  width: 100%;
+  text-transform: none;
+  font-size: 1rem;
+}
+
+.divider {
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 25px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  &::before {
+    margin-right: 0.5em;
+  }
+
+  &::after {
+    margin-left: 0.5em;
+  }
+}
+
+.google-button {
+  --background: #FFFFFF;
+  --color: #121212;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-icon {
+    color: #DB4437;
   }
 }

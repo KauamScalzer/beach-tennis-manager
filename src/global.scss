@@ -34,4 +34,148 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
+.swal2-container {
+  z-index: 100000 !important;
+}
+
+.swal-confirm {
+  background-color: #c6ff007a !important;
+  color: white !important;
+  border: 1px solid;
+}
+
+ // Container principal do SweetAlert2
+  .swal2-container {
+    z-index: 20000 !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .swal-ionic-button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 16px;
+    text-transform: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 8px;
+  }
+
+  
+
+  // Título
+  .swal2-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ion-text-color, #ffffff) !important;
+  }
+
+  // Container do HTML
+  .swal2-html-container {
+    margin: 20px 0;
+    color: var(--ion-text-color, #ffffff) !important;
+    
+    label {
+      color: var(--ion-color-step-800, #cccccc) !important;
+    }
+  }
+
+  // Ações (botões)
+  .swal2-actions {
+    margin-top: 24px;
+  }
+
+  // Loading spinner
+  .swal2-loader {
+    border-color: var(--ion-color-primary, #3880ff) transparent var(--ion-color-primary, #3880ff) transparent !important;
+  }
+
+  // Ícones do SweetAlert2
+  .swal2-icon {
+    &.swal2-success {
+      border-color: var(--ion-color-success, #2dd36f) !important;
+      color: var(--ion-color-success, #2dd36f) !important;
+      
+      [class^='swal2-success-line'] {
+        background-color: var(--ion-color-success, #2dd36f) !important;
+      }
+      .swal2-success-ring {
+        border-color: var(--ion-color-success, #2dd36f) !important;
+      }
+    }
+    
+    &.swal2-error {
+      border-color: var(--ion-color-danger, #eb445a) !important;
+      color: var(--ion-color-danger, #eb445a) !important;
+      
+      .swal2-x-mark-line-left,
+      .swal2-x-mark-line-right {
+        background-color: var(--ion-color-danger, #eb445a) !important;
+      }
+    }
+  }
+
+  .swal2-height-auto{
+    height: none;
+  }
+  
+
+.swal2-input,
+.swal2-textarea {
+  border: 1px solid var(--ion-color-step-300, #404040);
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 12px;
+  font-family: inherit;
+  background-color: var(--ion-color-step-50, #262626) !important;
+  color: var(--ion-text-color, #ffffff) !important;
+
+  &::placeholder {
+    color: var(--ion-color-step-600, #666666) !important;
+  }
+
+  &:focus {
+    border-color: var(--ion-color-primary, #3880ff);
+    box-shadow: 0 0 0 2px rgba(56, 128, 255, 0.2);
+    outline: none;
+    background-color: var(--ion-color-step-100, #2d2d2d) !important;
+  }
+}
+
+.swal-cancel {
+  background-color: var(--ion-color-step-200, #333333) !important;
+  color: var(--ion-text-color, #ffffff) !important;
+  border: 1px solid var(--ion-color-step-300, #404040) !important;
+}
+
+.swal-ionic-button {
+  height: 45px;
+  width: 115px;
+}
+// Garante que o backdrop apareça atrás do modal
+.swal2-backdrop-show {
+  z-index: 99999 !important;
+}
+
+// Garante que o modal apareça na frente
+.swal2-popup {
+  color: white !important;
+  background-color: #1c1c1e !important;
+  z-index: 100001 !important;
+}
+
+ion-toast {
+  z-index: 99997 !important;
+}
+
+ion-alert {
+  z-index: 99996 !important;
+}

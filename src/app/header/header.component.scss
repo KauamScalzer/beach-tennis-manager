@@ -5,18 +5,18 @@ ion-toolbar {
   // --padding-end: 16px;
   // --padding-top: 8px;
   // --padding-bottom: 8px;
-
+  border-radius: 12px !important;
   display: flex; // Garante que os itens internos usem flexbox
   align-items: center; // Alinha verticalmente os itens no centro
   justify-content: space-between; // Espaça os elementos (buttons slot start, title, buttons slot end)
-
+  border: 1px solid #c6ff00;
+  color: white;
+  --ion-color-base: #000 !important;
   ion-title {
-    // Estilos para o título
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
     padding: 0; // Remova qualquer padding padrão que possa empurrar o texto
-    color: var(--ion-color-light); // Exemplo: use uma variável CSS do Ionic para a cor clara
     // Ou defina diretamente a cor branca:
     // color: white;
 

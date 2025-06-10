@@ -19,6 +19,7 @@
     }
   }
 
+
   .search-input {
     --background: transparent;
     --color: white;
@@ -54,6 +55,10 @@
       }
     }
   }
+}
+
+.toolbar-title-default{
+  border-radius: 12px !important;
 }
 
 .tab-bar-dark {
