@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule, ModalController, LoadingController, AlertController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { addOutline, play, arrowBackOutline } from 'ionicons/icons';
 import { HeaderComponent } from '../header/header.component';
 import { CardListComponent } from '../card-list/card-list.component';
-import { AddTimeModalComponent } from '../add-time-modal/add-time-modal.component';
 
 import { TimeService } from '../services/time/time.service';
 import { MatchService } from '../services/match/match.service';
@@ -67,13 +66,10 @@ export class TimesPage implements OnInit {
   private orderedPhases: string[] = Object.keys(this.phaseOrderMap).sort((a, b) => this.phaseOrderMap[a] - this.phaseOrderMap[b]);
 
   constructor(
-    private modalCtrl: ModalController,
     private activatedRoute: ActivatedRoute,
     private timeService: TimeService,
     private matchService: MatchService,
     private campeonatoService: CampeonatoService,
-    private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController,
     private router: Router
   ) {}
 
@@ -252,18 +248,8 @@ export class TimesPage implements OnInit {
       try {
         const id = await this.timeService.addTime(formValues, this.campeonatoId);
         console.log('Equipe salva no Firebase com ID:', id);
-  
-        await Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Equipe criada com sucesso!',
-          confirmButtonText: 'OK',
-          customClass: {
-            popup: 'swal-ionic-popup',
-            confirmButton: 'swal-ionic-button swal-confirm'
-          },
-          buttonsStyling: false
-        });
+
+        await this.loadTimes(); // Recarrega as equipes após adicionar
   
       } catch (error) {
         console.error('Erro ao salvar equipe no Firebase:', error);
@@ -282,6 +268,7 @@ export class TimesPage implements OnInit {
   
       } finally {
         Swal.close(); // Fecha o loading
+        
       }
   
       
@@ -341,10 +328,12 @@ export class TimesPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingCtrl.create({
-      message: 'Sorteando equipes e criando a tabela inicial...',
+    Swal.fire({
+      title: 'Sorteando equipes e criando a tabela inicial...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading(),
     });
-    await loading.present();
 
     try {
       // 1. Embaralhar as equipes
@@ -442,26 +431,32 @@ export class TimesPage implements OnInit {
       }
       this.hasStarted = true;
 
-      const alert = await this.alertCtrl.create({
-        header: 'Sucesso!',
-        message: `Campeonato iniciado! A fase de ${initialPhaseName} foi criada.`,
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'success',
+        title: 'Sucesso!',
+        text: `Campeonato iniciado! A fase de ${initialPhaseName} foi criada.`,
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
       });
-      await alert.present();
 
       // 5. Redireciona para a página da Rodada, passando a fase inicial
       this.router.navigate(['/rodada', this.campeonatoId, initialPhaseName]);
 
     } catch (error) {
       console.error('Erro ao iniciar campeonato ou criar tabela inicial:', error);
-      const alert = await this.alertCtrl.create({
-        header: 'Erro',
-        message: 'Não foi possível iniciar o campeonato. Tente novamente.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível iniciar o campeonato. Tente novamente.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
       });
-      await alert.present();
     } finally {
-      loading.dismiss();
+      Swal.close();
     }
   }
 
