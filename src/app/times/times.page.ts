@@ -274,15 +274,6 @@ export class TimesPage implements OnInit {
         this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual]);
       } else {
         console.error('Campeonato iniciado, mas faseAtual não definida. Redirecionando para campeonatos.');
-        await Swal.fire({
-          icon: 'error',
-          title: 'Erro',
-          text: 'Fase atual não definida. Verifique o campeonato.',
-          confirmButtonText: 'OK',
-          customClass: {
-            confirmButton: 'swal-ionic-button'
-          },
-        });
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     } else {

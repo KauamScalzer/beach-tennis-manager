@@ -1,22 +1,13 @@
 ion-content {
-  --background: var(--ion-color-dark, #121212); // Garante fundo escuro
-  color: var(--ion-color-light, white); // Cor do texto padrão
-
-  // Estilos para o Header (já devem estar corretos se você usou o header.component.scss)
-  // Caso o título ainda não esteja branco ou o layout do header esteja errado,
-  // verifique seu `header.component.scss` para as regras de ion-toolbar e ion-title.
-  .header {
-    h1 {
-      color: white; // Garante branco
-    }
-  }
+  --background: #1c1c1e; // Fundo escuro conforme Figma
+  color: white; // Cor do texto padrão
 
   .phase-navigation {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding: 0 10px; // Adiciona um padding para as bordas
+    padding: 0 10px;
 
     h2 {
       margin: 0;
@@ -25,36 +16,39 @@ ion-content {
       color: white; // Garante que o H2 do título da fase seja branco
     }
     ion-button {
-      --color: var(--ion-color-light); // Botões de navegação (setas) brancos
+      --color: white; // Botões de navegação (setas) brancos
     }
   }
 
   .winner-display {
     text-align: center;
-    margin-top: 20px; // Espaçamento
+    margin-top: 20px;
     ion-icon {
       font-size: 2.5rem;
       vertical-align: middle;
       margin-right: 10px;
+      color: #c6ff00; // Cor do troféu
     }
     h3 {
       display: inline-block;
       margin: 0;
       vertical-align: middle;
       font-weight: bold;
+      color: #c6ff00; // Cor do texto do campeão
     }
   }
 
   .match-list {
-    margin-top: 20px; // Espaçamento do topo
+    margin-top: 20px;
   }
 
   .match-card {
-    --background: #2a2a2a; // Fundo do card da partida
-    color: var(--ion-color-light); // Cor do texto dentro do card
-    margin-bottom: 15px; // Espaçamento entre os cards
-    border-radius: 10px; // Cantos arredondados para os cards
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Sombra sutil para destacar
+    --background: #000; // Fundo do card da partida, quase preto
+    color: white; // Cor do texto dentro do card
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #c6ff00; // Borda verde fluorescente
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); // Sombra um pouco mais forte
 
     ion-card-content {
       padding: 15px;
@@ -62,24 +56,24 @@ ion-content {
 
     .match-teams-score {
       display: flex;
-      justify-content: space-between; // Espaça timeA, VS, timeB
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
     }
 
     .team-score {
       display: flex;
-      flex-direction: column; // Nome do time em cima, placar/controles embaixo
-      align-items: center; // Centraliza time e placar horizontalmente
-      flex: 1; // Ocupa espaço igual
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
       text-align: center;
-      padding: 0 5px; // Pequeno padding interno
+      padding: 0 5px;
 
       ion-text {
         font-size: 1.2rem;
         font-weight: bold;
-        margin-bottom: 5px; // Espaço entre nome do time e placar
-        color: white; // Garante que o nome do time seja branco por padrão
+        margin-bottom: 5px;
+        color: white; // Garante que o nome do time seja branco
       }
 
       .score-controls {
@@ -90,14 +84,15 @@ ion-content {
         ion-button {
           --padding-start: 5px;
           --padding-end: 5px;
-          --min-width: 30px; // Garante que o botão não encolha demais
-          --height: 30px; // Altura do botão
-          font-size: 1.2rem; // Tamanho do ícone +/-
-          --color: var(--ion-color-primary, #3880ff); // Cor dos botões de placar
+          --min-width: 30px;
+          --height: 30px;
+          font-size: 1.2rem;
+          --color: #c6ff00; // Cor dos botões de placar
+          // O background transparente já está padrão com fill="clear"
         }
 
-        ion-text { // O número do placar
-          font-size: 1.8rem; // Tamanho maior para o placar
+        ion-text {
+          font-size: 1.8rem;
           font-weight: bolder;
           margin: 0 10px;
           color: white; // Garante que o placar seja branco
@@ -108,36 +103,51 @@ ion-content {
     .vs-text {
       font-size: 1.2rem;
       font-weight: bold;
-      margin: 0 10px; // Espaçamento ao redor do "VS"
-      color: var(--ion-color-medium, #92949c); // Cor mais suave para "VS"
+      margin: 0 10px;
+      color: #92949c; // Cor mais suave para "VS"
     }
 
     .match-winner {
-      display: block; // Garante que ocupe a largura total
+      display: block;
       text-align: center;
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.1); // Linha separadora
       font-size: 1rem;
       font-weight: bold;
-      color: var(--ion-color-light); // "Vencedor:" texto
-      span { // Este span é para compatibilidade, o [color] é em ion-text agora
+      color: white; // "Vencedor:" texto
+      ion-text { // A cor do nome do vencedor
         font-size: 1.1rem;
         font-weight: bolder;
-        color: var(--ion-color-success, #10dc60); // Cor verde para o nome do vencedor
+        color: #c6ff00; // Cor verde para o nome do vencedor
       }
     }
   }
 
   .advance-button {
-    margin-top: 30px; // Espaçamento maior antes do botão de avançar
-    --background: var(--ion-color-primary, #3880ff); // Cor do botão de avançar
-    --color: white; // Cor do texto do botão
+    margin-top: 30px;
+    --background: #000; // Fundo preto para o botão de avançar
+    --color: #c6ff00; // Cor do texto e ícone do botão
+    border: 1px solid #c6ff00; // Borda verde fluorescente
+    border-radius: 12px; // Cantos arredondados
+    height: 48px; // Altura um pouco maior para o botão
+    font-size: 1.1rem;
+    font-weight: bold;
   }
 
-  ion-text[color="danger"] { // Mensagem de erro "Finalize todas..."
+  ion-text[color="danger"] {
     display: block;
     text-align: center;
     margin-top: 15px;
+  }
+}
+app-header {
+  --background: #1c1c1e; // Garante que o background do header seja o mesmo do content
+  ion-toolbar {
+    --background: #1c1c1e;
+    --color: white; // Garante a cor do texto do header
+  }
+  ion-title {
+    color: white;
   }
 }
