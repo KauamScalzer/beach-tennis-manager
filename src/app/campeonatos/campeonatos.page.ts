@@ -149,18 +149,6 @@ export class CampeonatosPage implements OnInit {
             autofocus
           >
         </div>
-        <div style="text-align: left;">
-          <label for="swal-input2" style="display: block; margin-bottom: 8px; font-weight: 500;">
-            Descrição (Opcional)
-          </label>
-          <textarea 
-            id="swal-input2" 
-            class="swal2-textarea" 
-            placeholder="Descreva brevemente o campeonato"
-            rows="3"
-            style="margin: 0; width: 100%; resize: vertical;"
-          ></textarea>
-        </div>
       `,
       focusConfirm: false,
       showCancelButton: true,
@@ -179,7 +167,6 @@ export class CampeonatosPage implements OnInit {
       heightAuto: false,
       preConfirm: () => {
         const nome = (document.getElementById('swal-input1') as HTMLInputElement).value;
-        const descricao = (document.getElementById('swal-input2') as HTMLTextAreaElement).value;
         
         if (!nome.trim()) {
           Swal.showValidationMessage('Nome do campeonato é obrigatório');
@@ -187,8 +174,7 @@ export class CampeonatosPage implements OnInit {
         }
         
         return {
-          nome: nome.trim(),
-          descricao: descricao.trim()
+          nome: nome.trim()
         };
       }
     });

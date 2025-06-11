@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, getDocs, query, where, CollectionReference } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, getDocs, query, where, CollectionReference, doc, updateDoc } from '@angular/fire/firestore';
 
 interface ITime {
   id: string;
@@ -53,5 +53,13 @@ export class TimeService {
       } as ITime;
     });
     return timesList;
+  }
+
+  async updateTime(timeId: string, timeData: { nome: string }): Promise<void> {
+    const timeDoc = doc(this.firestore, 'times', timeId);
+    await updateDoc(timeDoc, {
+      nome: timeData.nome
+    });
+    console.log('Time updated with ID: ', timeId);
   }
 }

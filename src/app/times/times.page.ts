@@ -14,6 +14,7 @@ import { CampeonatoService } from '../services/campeonato/campeonato.service';
 import { IMatch } from '../interfaces/imatch';
 import { ICampeonato } from '../interfaces/icampeonato';
 import { ITime } from '../interfaces/itime'; // Certifique-se de que ITime está sendo importado do seu arquivo interfaces/itime.ts
+import Swal from 'sweetalert2';
 
 addIcons({
   'add-outline': addOutline,
@@ -102,12 +103,14 @@ export class TimesPage implements OnInit {
 
   async loadCampeonatoData() {
     if (!this.campeonatoId) return;
-
-    const loading = await this.loadingCtrl.create({
-      message: 'Carregando dados do campeonato...',
+  
+    Swal.fire({
+      title: 'Carregando dados do campeonato...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading(),
     });
-    await loading.present();
-
+  
     try {
       this.campeonato = await this.campeonatoService.getCampeonatoById(this.campeonatoId);
       if (this.campeonato) {
@@ -115,25 +118,24 @@ export class TimesPage implements OnInit {
         console.log('Campeonato carregado:', this.campeonato);
         await this.loadTimes();
       } else {
-        console.error('Campeonato não encontrado.');
-        const alert = await this.alertCtrl.create({
-          header: 'Erro',
-          message: 'Campeonato não encontrado.',
-          buttons: ['OK'],
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Campeonato não encontrado.',
+          confirmButtonText: 'OK',
         });
-        await alert.present();
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     } catch (error) {
       console.error('Erro ao carregar dados do campeonato:', error);
-      const alert = await this.alertCtrl.create({
-        header: 'Erro',
-        message: 'Não foi possível carregar os dados do campeonato.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível carregar os dados do campeonato.',
+        confirmButtonText: 'OK',
       });
-      await alert.present();
     } finally {
-      loading.dismiss();
+      Swal.close();
     }
   }
 
@@ -147,12 +149,15 @@ export class TimesPage implements OnInit {
       console.log('Equipes carregadas para o campeonato', this.campeonatoId, ':', this.equipes);
     } catch (error) {
       console.error('Erro ao carregar equipes:', error);
-      const alert = await this.alertCtrl.create({
-        header: 'Erro',
-        message: 'Não foi possível carregar as equipes.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível carregar as equipes.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        },
       });
-      await alert.present();
     }
   }
 
@@ -162,65 +167,127 @@ export class TimesPage implements OnInit {
 
   async adicionarEquipe() {
     if (this.hasStarted) {
-      const alert = await this.alertCtrl.create({
-        header: 'Atenção',
-        message: 'Não é possível adicionar equipes após o campeonato ter sido iniciado.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: 'Não é possível adicionar equipes após o campeonato ter sido iniciado.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
       });
-      await alert.present();
       return;
     }
+  
     if (!this.campeonatoId) {
-        console.error('Não é possível adicionar equipe: Campeonato ID não definido.');
-        const alert = await this.alertCtrl.create({
-            header: 'Erro',
-            message: 'Não foi possível determinar o campeonato para adicionar a equipe.',
-            buttons: ['OK'],
-        });
-        await alert.present();
-        return;
-    }
-
-    const modal = await this.modalCtrl.create({
-        component: AddTimeModalComponent,
-        breakpoints: [0, 0.5, 0.8],
-        initialBreakpoint: 0.5,
-    });
-
-    await modal.present();
-
-    const { data, role } = await modal.onDidDismiss();
-    if (role === 'confirm' && data?.nome) {
-        const loading = await this.loadingCtrl.create({
-            message: 'Salvando equipe...',
-        });
-        await loading.present();
-
-        try {
-            const id = await this.timeService.addTime(data, this.campeonatoId);
-            console.log('Equipe salva no Firebase com ID:', id);
-
-            const alert = await this.alertCtrl.create({
-                header: 'Sucesso!',
-                message: 'Equipe criada com sucesso!',
-                buttons: ['OK'],
-            });
-            await alert.present();
-
-        } catch (error) {
-            console.error('Erro ao salvar equipe no Firebase:', error);
-            const alert = await this.alertCtrl.create({
-                header: 'Erro',
-                message: 'Não foi possível salvar a equipe. Tente novamente.',
-                buttons: ['OK'],
-            });
-            await alert.present();
-        } finally {
-            loading.dismiss();
+      console.error('Não é possível adicionar equipe: Campeonato ID não definido.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível determinar o campeonato para adicionar a equipe.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
         }
-        await this.loadTimes();
+      });
+      return;
+    }
+  
+    const { value: formValues } = await Swal.fire({
+      title: 'Adicionar Equipe',
+      html: `
+        <div style="text-align: left; margin-bottom: 20px;">
+          <label for="swal-input1" style="display: block; margin-bottom: 8px; font-weight: 500;">
+            Nome da Equipe
+          </label>
+          <input 
+            id="swal-input1" 
+            class="swal2-input" 
+            placeholder="Digite o nome da equipe"
+            style="margin: 0; width: 100%;"
+            autofocus
+          >
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Salvar',
+      cancelButtonText: 'Cancelar',
+      allowOutsideClick: false,
+      allowEscapeKey: true,
+      backdrop: true,
+      customClass: {
+        container: 'swal2-container',
+        popup: 'swal-ionic-popup',
+        confirmButton: 'swal-ionic-button swal-confirm',
+        cancelButton: 'swal-ionic-button swal-cancel'
+      },
+      buttonsStyling: false,
+      heightAuto: false,
+      preConfirm: () => {
+        const nome = (document.getElementById('swal-input1') as HTMLInputElement).value;
+        
+        if (!nome.trim()) {
+          Swal.showValidationMessage('Nome da equipe é obrigatório');
+          return false;
+        }
+  
+        return {
+          nome: nome.trim()
+        };
+      }
+    });
+  
+    if (formValues) {
+      Swal.fire({
+        title: 'Salvando equipe...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      try {
+        const id = await this.timeService.addTime(formValues, this.campeonatoId);
+        console.log('Equipe salva no Firebase com ID:', id);
+  
+        await Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Equipe criada com sucesso!',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-ionic-popup',
+            confirmButton: 'swal-ionic-button swal-confirm'
+          },
+          buttonsStyling: false
+        });
+  
+      } catch (error) {
+        console.error('Erro ao salvar equipe no Firebase:', error);
+  
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível salvar a equipe. Tente novamente.',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-ionic-popup',
+            confirmButton: 'swal-ionic-button swal-confirm'
+          },
+          buttonsStyling: false
+        });
+  
+      } finally {
+        Swal.close(); // Fecha o loading
+      }
+  
+      
+  
     } else {
-        console.log('Criação de equipe cancelada ou sem dados válidos.');
+      console.log('Criação de equipe cancelada ou sem dados válidos.');
     }
   }
 
@@ -230,12 +297,15 @@ export class TimesPage implements OnInit {
         this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual]);
       } else {
         console.error('Campeonato iniciado, mas faseAtual não definida. Redirecionando para campeonatos.');
-        const alert = await this.alertCtrl.create({
-          header: 'Erro',
-          message: 'Fase atual não definida. Verifique o campeonato.',
-          buttons: ['OK'],
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Fase atual não definida. Verifique o campeonato.',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal-ionic-button'
+          },
         });
-        await alert.present();
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     } else {
@@ -246,22 +316,28 @@ export class TimesPage implements OnInit {
   // 🔥 LÓGICA DE INICIAR CAMPEONATO E GERAR PRIMEIRA RODADA COM FASES DINÂMICAS
   private async startCampeonato() {
     if (!this.campeonatoId) {
-      const alert = await this.alertCtrl.create({
-        header: 'Erro',
-        message: 'ID do campeonato não encontrado.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'ID do campeonato não encontrado.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        },
       });
-      await alert.present();
       return;
     }
 
     if (this.equipes.length < 2) {
-      const alert = await this.alertCtrl.create({
-        header: 'Erro',
-        message: 'É necessário ter pelo menos 2 equipes para iniciar o campeonato.',
-        buttons: ['OK'],
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'É necessário ter pelo menos 2 equipes para iniciar o campeonato.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        },
       });
-      await alert.present();
       return;
     }
 
