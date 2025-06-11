@@ -82,6 +82,17 @@ export class TimesPage implements OnInit {
       if (this.campeonatoId) {
         console.log('ID do Campeonato:', this.campeonatoId);
         await this.loadCampeonatoData();
+        
+        // Verificar se tem query parameter para forçar mostrar equipes
+        this.activatedRoute.queryParams.subscribe(queryParams => {
+          const forceShowTeams = queryParams['showTeams'];
+          
+          // Auto-redirect se o campeonato já tiver começado E não for forçado a mostrar equipes
+          if (this.hasStarted && this.campeonato?.faseAtual && !forceShowTeams) {
+            console.log('Campeonato já iniciado. Redirecionando para rodadas...');
+            this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual], { replaceUrl: true });
+          }
+        });
       } else {
         console.warn('Nenhum ID de campeonato fornecido na rota.');
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
