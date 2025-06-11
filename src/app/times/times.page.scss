@@ -32,21 +32,62 @@
     }
   }
 
-  .equipes-list {
+  .equipes-list { /* Manter para compatibilidade, mas card-list é mais usado agora */
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+}
 
-    ion-card {
-      --background: #000;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid #c6ff00;
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px; /* Adicionado para espaçamento após o botão de iniciar */
 
-      ion-card-content {
-        font-weight: bold;
-        font-size: 1.1rem;
-        color: white;
+  ion-card.team-card { /* Seletor mais específico */
+    --background: #000;
+    border-radius: 12px;
+    border: 1px solid #c6ff00;
+    display: flex; /* Usar flexbox para alinhar conteúdo e botões */
+    align-items: center; /* Alinha verticalmente */
+    padding: 0; /* Remover padding padrão do ion-card */
+  }
+
+  ion-card-content.team-card-content { /* Seletor mais específico */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ocupa toda a largura do card */
+    padding: 16px; /* Adicionar padding aqui para o conteúdo */
+
+    span {
+      flex-grow: 1; /* Permite que o nome da equipe ocupe o espaço restante */
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+      text-align: left; /* Alinha o texto à esquerda */
+      cursor: pointer; /* Indica que é clicável */
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px; /* Espaçamento entre os botões */
+
+      ion-button {
+        --padding-start: 8px; /* Ajusta padding para ícones */
+        --padding-end: 8px; /* Ajusta padding para ícones */
+        height: 36px; /* Ajusta altura do botão */
+        width: 36px; /* Ajusta largura do botão */
+        --border-radius: 50%; /* Faz o botão circular */
+      }
+
+      .edit-button {
+        --color: #00bcd4; /* Cor para o botão de editar (azul ciano) */
+      }
+
+      .delete-button {
+        --color: #e91e63; /* Cor para o botão de excluir (vermelho rosado) */
       }
     }
   }

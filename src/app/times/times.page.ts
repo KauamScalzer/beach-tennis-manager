@@ -3,22 +3,23 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { addOutline, play, arrowBackOutline } from 'ionicons/icons';
+import { addOutline, play, arrowBackOutline, createOutline, trashOutline } from 'ionicons/icons'; // Adicione createOutline e trashOutline
 import { HeaderComponent } from '../header/header.component';
-import { CardListComponent } from '../card-list/card-list.component';
 
 import { TimeService } from '../services/time/time.service';
 import { MatchService } from '../services/match/match.service';
 import { CampeonatoService } from '../services/campeonato/campeonato.service';
 import { IMatch } from '../interfaces/imatch';
 import { ICampeonato } from '../interfaces/icampeonato';
-import { ITime } from '../interfaces/itime'; // Certifique-se de que ITime está sendo importado do seu arquivo interfaces/itime.ts
+import { ITime } from '../interfaces/itime';
 import Swal from 'sweetalert2';
 
 addIcons({
   'add-outline': addOutline,
   'play': play,
   'arrow-back-outline': arrowBackOutline,
+  'create-outline': createOutline, // Adicione o ícone de editar
+  'trash-outline': trashOutline,   // Adicione o ícone de excluir
 });
 
 @Component({
@@ -29,7 +30,6 @@ addIcons({
     CommonModule,
     RouterModule,
     HeaderComponent,
-    CardListComponent,
   ],
   templateUrl: './times.page.html',
   styleUrls: ['./times.page.scss'],
@@ -40,29 +40,24 @@ export class TimesPage implements OnInit {
   campeonato: ICampeonato | null = null;
   hasStarted: boolean = false;
 
-  // 🔥 Mapeamento de nome de fase para ordem (1=Final, 2=Semifinal, etc.)
   private phaseOrderMap: { [key: string]: number } = {
     'Final': 1,
     'Semifinal': 2,
     'Quartas de Final': 3,
     'Oitavas de Final': 4,
-    '16-avos de Final': 5, // Para campeonatos com até 32 times
-    '32-avos de Final': 6, // Para campeonatos com até 64 times (exemplo)
-    // Adicione mais fases se precisar suportar mais times
+    '16-avos de Final': 5,
+    '32-avos de Final': 6,
   };
 
-  // 🔥 Mapeamento de ordem para nome de fase
   private orderPhaseMap: { [key: number]: string } = {
     1: 'Final',
     2: 'Semifinal',
     3: 'Quartas de Final',
     4: 'Oitavas de Final',
     5: '16-avos de Final',
-    6: '32-avos de Final', // Exemplo
-    // Adicione mais fases aqui
+    6: '32-avos de Final',
   };
 
-  // 🔥 orderedPhases agora ordena os nomes das fases com base na sua ordem numérica (crescente)
   private orderedPhases: string[] = Object.keys(this.phaseOrderMap).sort((a, b) => this.phaseOrderMap[a] - this.phaseOrderMap[b]);
 
   constructor(
@@ -79,12 +74,10 @@ export class TimesPage implements OnInit {
       if (this.campeonatoId) {
         console.log('ID do Campeonato:', this.campeonatoId);
         await this.loadCampeonatoData();
-        
-        // Verificar se tem query parameter para forçar mostrar equipes
+
         this.activatedRoute.queryParams.subscribe(queryParams => {
           const forceShowTeams = queryParams['showTeams'];
-          
-          // Auto-redirect se o campeonato já tiver começado E não for forçado a mostrar equipes
+
           if (this.hasStarted && this.campeonato?.faseAtual && !forceShowTeams) {
             console.log('Campeonato já iniciado. Redirecionando para rodadas...');
             this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual], { replaceUrl: true });
@@ -99,14 +92,14 @@ export class TimesPage implements OnInit {
 
   async loadCampeonatoData() {
     if (!this.campeonatoId) return;
-  
+
     Swal.fire({
       title: 'Carregando dados do campeonato...',
       allowOutsideClick: false,
       showConfirmButton: false,
       didOpen: () => Swal.showLoading(),
     });
-  
+
     try {
       this.campeonato = await this.campeonatoService.getCampeonatoById(this.campeonatoId);
       if (this.campeonato) {
@@ -157,9 +150,10 @@ export class TimesPage implements OnInit {
     }
   }
 
-  getEquipeNomes(): string[] {
-    return this.equipes.map(e => e.nome);
-  }
+  // Remova ou adapte getEquipeNomes() se não for mais necessário
+  // getEquipeNomes(): string[] {
+  //   return this.equipes.map(e => e.nome);
+  // }
 
   async adicionarEquipe() {
     if (this.hasStarted) {
@@ -174,7 +168,7 @@ export class TimesPage implements OnInit {
       });
       return;
     }
-  
+
     if (!this.campeonatoId) {
       console.error('Não é possível adicionar equipe: Campeonato ID não definido.');
       await Swal.fire({
@@ -188,7 +182,7 @@ export class TimesPage implements OnInit {
       });
       return;
     }
-  
+
     const { value: formValues } = await Swal.fire({
       title: 'Adicionar Equipe',
       html: `
@@ -196,9 +190,9 @@ export class TimesPage implements OnInit {
           <label for="swal-input1" style="display: block; margin-bottom: 8px; font-weight: 500;">
             Nome da Equipe
           </label>
-          <input 
-            id="swal-input1" 
-            class="swal2-input" 
+          <input
+            id="swal-input1"
+            class="swal2-input"
             placeholder="Digite o nome da equipe"
             style="margin: 0; width: 100%;"
             autofocus
@@ -222,18 +216,18 @@ export class TimesPage implements OnInit {
       heightAuto: false,
       preConfirm: () => {
         const nome = (document.getElementById('swal-input1') as HTMLInputElement).value;
-        
+
         if (!nome.trim()) {
           Swal.showValidationMessage('Nome da equipe é obrigatório');
           return false;
         }
-  
+
         return {
           nome: nome.trim()
         };
       }
     });
-  
+
     if (formValues) {
       Swal.fire({
         title: 'Salvando equipe...',
@@ -244,16 +238,16 @@ export class TimesPage implements OnInit {
           Swal.showLoading();
         }
       });
-  
+
       try {
         const id = await this.timeService.addTime(formValues, this.campeonatoId);
         console.log('Equipe salva no Firebase com ID:', id);
 
-        await this.loadTimes(); // Recarrega as equipes após adicionar
-  
+        await this.loadTimes();
+
       } catch (error) {
         console.error('Erro ao salvar equipe no Firebase:', error);
-  
+
         await Swal.fire({
           icon: 'error',
           title: 'Erro',
@@ -265,14 +259,10 @@ export class TimesPage implements OnInit {
           },
           buttonsStyling: false
         });
-  
+
       } finally {
-        Swal.close(); // Fecha o loading
-        
+        Swal.close();
       }
-  
-      
-  
     } else {
       console.log('Criação de equipe cancelada ou sem dados válidos.');
     }
@@ -300,7 +290,6 @@ export class TimesPage implements OnInit {
     }
   }
 
-  // 🔥 LÓGICA DE INICIAR CAMPEONATO E GERAR PRIMEIRA RODADA COM FASES DINÂMICAS
   private async startCampeonato() {
     if (!this.campeonatoId) {
       await Swal.fire({
@@ -336,40 +325,29 @@ export class TimesPage implements OnInit {
     });
 
     try {
-      // 1. Embaralhar as equipes
       const shuffledTeams = [...this.equipes].sort(() => Math.random() - 0.5);
       console.log('Equipes embaralhadas:', shuffledTeams.map(t => t.nome));
 
-      // 🔥 Lógica para determinar a fase inicial com base no número de times
       const numTeams = shuffledTeams.length;
-      let effectiveNumTeamsForRound = 2; // Começa na fase Final (requer 2 times)
-      let initialPhaseOrder = 1; // Ordem da fase (1 = Final)
+      let effectiveNumTeamsForRound = 2;
+      let initialPhaseOrder = 1;
 
-      // Encontra a menor potência de 2 que pode acomodar todos os times
-      // e determina a ordem da fase correspondente.
       while (effectiveNumTeamsForRound < numTeams) {
         effectiveNumTeamsForRound *= 2;
         initialPhaseOrder++;
       }
 
-      // Garante que a ordem da fase existe no nosso mapa.
-      // Se tivermos muitos times e não tivermos mapeado fases suficientes (ex: 64 times),
-      // usará a fase mapeada mais "profunda" disponível.
       if (!this.orderPhaseMap[initialPhaseOrder]) {
-          initialPhaseOrder = Math.max(...Object.values(this.phaseOrderMap)); // Pega a ordem mais alta mapeada
+          initialPhaseOrder = Math.max(...Object.values(this.phaseOrderMap));
           console.warn(`Número de times (${numTeams}) excede fases mapeadas. Usando a fase inicial mais profunda: ${this.orderPhaseMap[initialPhaseOrder]}`);
       }
 
       const initialPhaseName = this.orderPhaseMap[initialPhaseOrder];
 
-
       const matchesCreated: IMatch[] = [];
-      // Quantidade de jogos 1x1
       let numRealMatches = Math.floor(numTeams / 2);
-      // Quantidade de Byes (times que avançam direto)
       let numByes = numTeams % 2;
 
-      // Separa os times que terão Byes (os últimos na lista embaralhada)
       const teamsWithByes: ITime[] = [];
       for (let i = 0; i < numByes; i++) {
         teamsWithByes.push(shuffledTeams.pop()!);
@@ -377,7 +355,6 @@ export class TimesPage implements OnInit {
 
       let partidaNaFaseCounter = 1;
 
-      // 2. Criar partidas 1x1 para a fase inicial
       for (let i = 0; i < numRealMatches; i++) {
         const timeA = shuffledTeams[i * 2];
         const timeB = shuffledTeams[i * 2 + 1];
@@ -400,7 +377,6 @@ export class TimesPage implements OnInit {
         matchesCreated.push({ ...match, id: matchId });
       }
 
-      // 3. Criar "partidas" de BYE
       for (const teamBye of teamsWithByes) {
         const byeMatch: IMatch = {
           campeonatoId: this.campeonatoId,
@@ -411,7 +387,7 @@ export class TimesPage implements OnInit {
           timeANome: teamBye.nome,
           timeBId: null,
           timeBNome: null,
-          vencedorId: teamBye.id, // O próprio time já é o vencedor
+          vencedorId: teamBye.id,
           vencedorNome: teamBye.nome,
           placarTimeA: 0,
           placarTimeB: 0,
@@ -420,7 +396,6 @@ export class TimesPage implements OnInit {
         matchesCreated.push({ ...byeMatch, id: byeMatchId });
       }
 
-      // 4. Atualizar o campeonato no Firebase
       await this.campeonatoService.updateCampeonato(this.campeonatoId, {
         faseAtual: initialPhaseName,
         status: 'em_andamento'
@@ -441,7 +416,6 @@ export class TimesPage implements OnInit {
         }
       });
 
-      // 5. Redireciona para a página da Rodada, passando a fase inicial
       this.router.navigate(['/rodada', this.campeonatoId, initialPhaseName]);
 
     } catch (error) {
@@ -460,7 +434,206 @@ export class TimesPage implements OnInit {
     }
   }
 
-  abrirEquipe(equipeNome: string) {
-    console.log('Abrindo detalhes da equipe:', equipeNome);
+  abrirEquipe(equipe: ITime) { // Altere para receber o objeto ITime completo
+    console.log('Abrindo detalhes da equipe:', equipe.nome, 'ID:', equipe.id);
+    // Implemente a navegação ou modal para detalhes da equipe aqui
+    // Ex: this.router.navigate(['/equipe-detalhes', equipe.id]);
+  }
+
+  // --- Novos métodos para Editar e Excluir ---
+
+  async editarEquipe(equipe: ITime) {
+    if (this.hasStarted) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: 'Não é possível editar equipes após o campeonato ter sido iniciado.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
+      });
+      return;
+    }
+
+    const { value: formValues } = await Swal.fire({
+      title: 'Editar Equipe',
+      html: `
+        <div style="text-align: left; margin-bottom: 20px;">
+          <label for="swal-input1" style="display: block; margin-bottom: 8px; font-weight: 500;">
+            Nome da Equipe
+          </label>
+          <input
+            id="swal-input1"
+            class="swal2-input"
+            placeholder="Digite o novo nome da equipe"
+            value="${equipe.nome}"
+            style="margin: 0; width: 100%;"
+            autofocus
+          >
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Salvar',
+      cancelButtonText: 'Cancelar',
+      allowOutsideClick: false,
+      allowEscapeKey: true,
+      backdrop: true,
+      customClass: {
+        container: 'swal2-container',
+        popup: 'swal-ionic-popup',
+        confirmButton: 'swal-ionic-button swal-confirm',
+        cancelButton: 'swal-ionic-button swal-cancel'
+      },
+      buttonsStyling: false,
+      heightAuto: false,
+      preConfirm: () => {
+        const nome = (document.getElementById('swal-input1') as HTMLInputElement).value;
+
+        if (!nome.trim()) {
+          Swal.showValidationMessage('Nome da equipe é obrigatório');
+          return false;
+        }
+
+        return {
+          nome: nome.trim()
+        };
+      }
+    });
+
+    if (formValues && equipe.id) {
+      Swal.fire({
+        title: 'Atualizando equipe...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      try {
+        await this.timeService.updateTime(equipe.id, formValues);
+        console.log('Equipe atualizada no Firebase:', equipe.id);
+        await this.loadTimes(); // Recarrega as equipes após atualizar
+
+      } catch (error) {
+        console.error('Erro ao atualizar equipe no Firebase:', error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível atualizar a equipe. Tente novamente.',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-ionic-popup',
+            confirmButton: 'swal-ionic-button swal-confirm'
+          },
+          buttonsStyling: false
+        });
+      } finally {
+        Swal.close();
+      }
+    } else if (formValues && !equipe.id) {
+        console.error('ID da equipe não encontrado para atualização.');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Não foi possível identificar a equipe para atualizar.',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'swal-ionic-popup',
+                confirmButton: 'swal-ionic-button swal-confirm'
+            },
+            buttonsStyling: false
+        });
+    } else {
+        console.log('Edição de equipe cancelada ou sem dados válidos.');
+    }
+  }
+
+  async excluirEquipe(equipe: ITime) {
+    if (this.hasStarted) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: 'Não é possível excluir equipes após o campeonato ter sido iniciado.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
+      });
+      return;
+    }
+
+    if (!equipe.id) {
+      console.error('ID da equipe não encontrado para exclusão.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: 'Não foi possível identificar a equipe para excluir.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'swal-ionic-button'
+        }
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: `Tem certeza que deseja excluir a equipe "${equipe.nome}"?`,
+      text: 'Essa ação não pode ser desfeita.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        container: 'swal2-container',
+        popup: 'swal-ionic-popup',
+        confirmButton: 'swal-ionic-button swal-confirm-danger', // Nova classe para botão de exclusão
+        cancelButton: 'swal-ionic-button swal-cancel'
+      },
+      buttonsStyling: false,
+      heightAuto: false,
+    });
+
+    if (result.isConfirmed) {
+      await this.loadTimes()
+      Swal.fire({
+        title: 'Excluindo equipe...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      try {
+        await this.timeService.deleteTime(equipe.id);
+        console.log('Equipe excluída do Firebase:', equipe.id);
+        await this.loadTimes(); // Recarrega as equipes após excluir
+        
+        
+
+      } catch (error) {
+        console.error('Erro ao excluir equipe do Firebase:', error);
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Não foi possível excluir a equipe. Tente novamente.',
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal-ionic-popup',
+            confirmButton: 'swal-ionic-button swal-confirm'
+          },
+          buttonsStyling: false
+        });
+      } finally {
+        Swal.close();
+      }
+    } else {
+      console.log('Exclusão de equipe cancelada.');
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, addDoc, collection, getDocs, query, where, CollectionReference, doc, updateDoc } from '@angular/fire/firestore';
+import { deleteDoc } from 'firebase/firestore';
 
 interface ITime {
   id: string;
@@ -61,5 +62,11 @@ export class TimeService {
       nome: timeData.nome
     });
     console.log('Time updated with ID: ', timeId);
+  }
+
+  async deleteTime(timeId: string): Promise<void> {
+    const timeDoc = doc(this.firestore, 'times', timeId);
+    await deleteDoc(timeDoc);
+    console.log('Time deleted with ID: ', timeId);
   }
 }

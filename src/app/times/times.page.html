@@ -24,9 +24,25 @@
     </p>
   </ion-text>
 
-  <app-card-list
-    [items]="getEquipeNomes()"
-    (onItemClick)="abrirEquipe($event)"
-  ></app-card-list>
+  <div class="card-list">
+    <ion-card
+      *ngFor="let item of equipes"
+      class="team-card"
+    >
+      <ion-card-content class="team-card-content">
+        <span (click)="abrirEquipe(item)">
+          {{ item.nome }}
+        </span>
+        <div class="actions">
+          <ion-button fill="clear" (click)="editarEquipe(item)" class="edit-button">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="excluirEquipe(item)" class="delete-button">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
 </ion-content>
