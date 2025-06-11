@@ -1,14 +1,5 @@
 ion-content.content-dark {
-  --background: #121212; // Um tom de preto/cinza escuro comum em apps
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-.scroll-y{
-  display: contents;
+  text-align: -webkit-center;
 }
 .logo-container {
   margin-bottom: 40px;
