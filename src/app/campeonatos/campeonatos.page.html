@@ -14,9 +14,25 @@
     ></ion-input>
   </ion-item>
 
-  <app-card-list
-    [items]="getCampeonatoNomesFiltrados()"
-    (onItemClick)="handleCampeonatoClick($event)"
-  ></app-card-list>
+  <div class="card-list">
+    <ion-card
+      *ngFor="let campeonato of getFilteredCampeonatos()"
+      class="championship-card"
+    >
+      <ion-card-content class="championship-card-content">
+        <span (click)="abrirCampeonato(campeonato)">
+          {{ campeonato.nome }}
+        </span>
+        <div class="actions">
+          <ion-button fill="clear" (click)="editarCampeonato(campeonato)" class="edit-button">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="excluirCampeonato(campeonato)" class="delete-button">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
 </ion-content>

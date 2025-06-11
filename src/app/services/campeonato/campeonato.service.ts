@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 // Importe 'doc', 'updateDoc', 'getDoc'
 import { Firestore, addDoc, collection, getDocs, query, where, doc, updateDoc, getDoc } from '@angular/fire/firestore';
 import { ICampeonato } from '../../interfaces/icampeonato'; // Importe a interface atualizada
+import { deleteDoc } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -76,6 +77,12 @@ export class CampeonatoService {
     const campeonatoDocRef = doc(this.firestore, 'campeonatos', campeonatoId);
     await updateDoc(campeonatoDocRef, data);
     console.log(`Campeonato ${campeonatoId} updated with data:`, data);
+  }
+
+  async deleteCampeonato(campeonatoId: string): Promise<void> {
+    const campeonatoDocRef = doc(this.firestore, 'campeonatos', campeonatoId);
+    await deleteDoc(campeonatoDocRef);
+    console.log(`Campeonato ${campeonatoId} deleted`);
   }
 
   // NOVO MÉTODO: Obter um único campeonato pelo ID
