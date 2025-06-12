@@ -1,6 +1,6 @@
 ion-content {
-  --background: #1c1c1e; // Fundo escuro conforme Figma
-  color: white; // Cor do texto padrão
+  --background: #1c1c1e;
+  color: white;
 
   .phase-navigation {
     display: flex;
@@ -13,10 +13,10 @@ ion-content {
       margin: 0;
       font-size: 1.5rem;
       font-weight: bold;
-      color: white; // Garante que o H2 do título da fase seja branco
+      color: white;
     }
     ion-button {
-      --color: white; // Botões de navegação (setas) brancos
+      --color: white;
     }
   }
 
@@ -27,14 +27,14 @@ ion-content {
       font-size: 2.5rem;
       vertical-align: middle;
       margin-right: 10px;
-      color: #c6ff00; // Cor do troféu
+      color: #c6ff00;
     }
     h3 {
       display: inline-block;
       margin: 0;
       vertical-align: middle;
       font-weight: bold;
-      color: #c6ff00; // Cor do texto do campeão
+      color: #c6ff00;
     }
   }
 
@@ -43,12 +43,12 @@ ion-content {
   }
 
   .match-card {
-    --background: #000; // Fundo do card da partida, quase preto
-    color: white; // Cor do texto dentro do card
+    --background: #000;
+    color: white;
     margin-bottom: 15px;
     border-radius: 10px;
-    border: 1px solid #c6ff00; // Borda verde fluorescente
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); // Sombra um pouco mais forte
+    border: 1px solid #c6ff00;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 
     ion-card-content {
       padding: 15px;
@@ -73,7 +73,7 @@ ion-content {
         font-size: 1.2rem;
         font-weight: bold;
         margin-bottom: 5px;
-        color: white; // Garante que o nome do time seja branco
+        color: white;
       }
 
       .score-controls {
@@ -87,15 +87,14 @@ ion-content {
           --min-width: 30px;
           --height: 30px;
           font-size: 1.2rem;
-          --color: #c6ff00; // Cor dos botões de placar
-          // O background transparente já está padrão com fill="clear"
+          --color: #c6ff00;
         }
 
         ion-text {
           font-size: 1.8rem;
           font-weight: bolder;
           margin: 0 10px;
-          color: white; // Garante que o placar seja branco
+          color: white;
         }
       }
     }
@@ -104,7 +103,7 @@ ion-content {
       font-size: 1.2rem;
       font-weight: bold;
       margin: 0 10px;
-      color: #92949c; // Cor mais suave para "VS"
+      color: #92949c;
     }
 
     .match-winner {
@@ -112,25 +111,25 @@ ion-content {
       text-align: center;
       margin-top: 10px;
       padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1); // Linha separadora
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       font-size: 1rem;
       font-weight: bold;
-      color: white; // "Vencedor:" texto
-      ion-text { // A cor do nome do vencedor
+      color: white;
+      ion-text {
         font-size: 1.1rem;
         font-weight: bolder;
-        color: #c6ff00; // Cor verde para o nome do vencedor
+        color: #c6ff00;
       }
     }
   }
 
   .advance-button {
     margin-top: 30px;
-    --background: #000; // Fundo preto para o botão de avançar
-    --color: #c6ff00; // Cor do texto e ícone do botão
-    border: 1px solid #c6ff00; // Borda verde fluorescente
-    border-radius: 12px; // Cantos arredondados
-    height: 48px; // Altura um pouco maior para o botão
+    --background: #000;
+    --color: #c6ff00;
+    border: 1px solid #c6ff00;
+    border-radius: 12px;
+    height: 48px;
     font-size: 1.1rem;
     font-weight: bold;
   }
@@ -142,10 +141,10 @@ ion-content {
   }
 }
 app-header {
-  --background: #1c1c1e; // Garante que o background do header seja o mesmo do content
+  --background: #1c1c1e;
   ion-toolbar {
     --background: #1c1c1e;
-    --color: white; // Garante a cor do texto do header
+    --color: white;
   }
   ion-title {
     color: white;

@@ -9,12 +9,10 @@ import {
   trophyOutline,
   peopleOutline,
   arrowBackOutline,
-  createOutline, // Adicione createOutline
-  trashOutline,   // Adicione trashOutline
+  createOutline,
+  trashOutline,
 } from 'ionicons/icons';
 import { HeaderComponent } from '../header/header.component';
-// import { CardListComponent } from '../card-list/card-list.component'; // Remova este import, não será mais usado
-
 import { CampeonatoService } from '../services/campeonato/campeonato.service';
 import { AuthService } from '../services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -27,16 +25,16 @@ addIcons({
   'trophy-outline': trophyOutline,
   'people-outline': peopleOutline,
   'arrow-back-outline': arrowBackOutline,
-  'create-outline': createOutline, // Adicione o ícone de editar
-  'trash-outline': trashOutline,   // Adicione o ícone de excluir
+  'create-outline': createOutline,
+  'trash-outline': trashOutline,
 });
 
 interface ICampeonato {
   id: string;
   nome: string;
   userId: string;
-  status?: string; // Adicionado para futura compatibilidade, se necessário
-  faseAtual?: string | null; // Permite null para compatibilidade com o tipo importado
+  status?: string;
+  faseAtual?: string | null;
 }
 
 @Component({
@@ -47,7 +45,6 @@ interface ICampeonato {
     CommonModule,
     FormsModule,
     HeaderComponent,
-    // CardListComponent, // Remova CardListComponent
   ],
   templateUrl: './campeonatos.page.html',
   styleUrls: ['./campeonatos.page.scss'],
@@ -81,7 +78,6 @@ export class CampeonatosPage implements OnInit {
       return;
     }
 
-    // Adicionado SweetAlert2 para loading
     Swal.fire({
       title: 'Carregando campeonatos...',
       allowOutsideClick: false,
@@ -108,11 +104,10 @@ export class CampeonatosPage implements OnInit {
         buttonsStyling: false
       });
     } finally {
-      Swal.close(); // Fechar o loading, seja em sucesso ou erro
+      Swal.close();
     }
   }
 
-  // Novo método para retornar os campeonatos filtrados como ICampeonato[]
   getFilteredCampeonatos(): ICampeonato[] {
     return this.campeonatos
       .filter(campeonato =>
@@ -122,7 +117,6 @@ export class CampeonatosPage implements OnInit {
       );
   }
 
-  // Altere para receber o objeto ICampeonato completo
   handleCampeonatoClick(campeonato: ICampeonato) {
     this.abrirCampeonato(campeonato);
   }
@@ -227,29 +221,12 @@ export class CampeonatosPage implements OnInit {
     }
   }
 
-  // Altere para receber o objeto ICampeonato completo
   abrirCampeonato(campeonato: ICampeonato) {
     console.log('Abrir detalhes do campeonato:', campeonato.nome, 'ID:', campeonato.id);
     this.router.navigate(['/times', campeonato.id]);
   }
 
-  // --- Novos métodos para Editar e Excluir Campeonatos ---
-
   async editarCampeonato(campeonato: ICampeonato) {
-    // É importante verificar se o campeonato pode ser editado.
-    // Por exemplo, você pode não querer permitir edição se o campeonato já começou.
-    // O status do campeonato pode ser verificado aqui. Por simplicidade, não adicionarei a lógica
-    // de "hasStarted" aqui, mas é uma boa prática.
-    // if (campeonato.status === 'em_andamento' || campeonato.status === 'finalizado') {
-    //   await Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Atenção',
-    //     text: 'Não é possível editar campeonatos após o início.',
-    //     confirmButtonText: 'OK',
-    //   });
-    //   return;
-    // }
-
     const { value: formValues } = await Swal.fire({
       title: 'Editar Campeonato',
       html: `
@@ -308,10 +285,9 @@ export class CampeonatosPage implements OnInit {
       });
 
       try {
-        // Assume que CampeonatoService tem um método updateCampeonato
         await this.campeonatoService.updateCampeonato(campeonato.id, { nome: formValues.nome });
         console.log('Campeonato atualizado no Firebase:', campeonato.id);
-        await this.loadCampeonatos(); // Recarrega os campeonatos após atualizar
+        await this.loadCampeonatos();
 
       } catch (error) {
         console.error('Erro ao atualizar campeonato no Firebase:', error);
@@ -348,18 +324,6 @@ export class CampeonatosPage implements OnInit {
   }
 
   async excluirCampeonato(campeonato: ICampeonato) {
-    // Regra similar: você pode não querer permitir exclusão se o campeonato já começou
-    // ou se tiver equipes/partidas associadas.
-    // if (campeonato.status === 'em_andamento' || campeonato.status === 'finalizado') {
-    //   await Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Atenção',
-    //     text: 'Não é possível excluir campeonatos após o início.',
-    //     confirmButtonText: 'OK',
-    //   });
-    //   return;
-    // }
-
     if (!campeonato.id) {
       console.error('ID do campeonato não encontrado para exclusão.');
       await Swal.fire({
@@ -376,7 +340,7 @@ export class CampeonatosPage implements OnInit {
 
     const result = await Swal.fire({
       title: `Tem certeza que deseja excluir o campeonato "${campeonato.nome}"?`,
-      text: 'Essa ação não pode ser desfeita e todas as equipes e partidas associadas serão perdidas!', // Aviso mais forte
+      text: 'Essa ação não pode ser desfeita e todas as equipes e partidas associadas serão perdidas!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir!',
@@ -384,7 +348,7 @@ export class CampeonatosPage implements OnInit {
       customClass: {
         container: 'swal2-container',
         popup: 'swal-ionic-popup',
-        confirmButton: 'swal-ionic-button swal-confirm-danger', // Classe para botão de exclusão
+        confirmButton: 'swal-ionic-button swal-confirm-danger',
         cancelButton: 'swal-ionic-button swal-cancel'
       },
       buttonsStyling: false,
@@ -403,10 +367,9 @@ export class CampeonatosPage implements OnInit {
       });
 
       try {
-        // Assume que CampeonatoService tem um método deleteCampeonato
         await this.campeonatoService.deleteCampeonato(campeonato.id);
         console.log('Campeonato excluído do Firebase:', campeonato.id);
-        await this.loadCampeonatos(); // Recarrega os campeonatos após excluir
+        await this.loadCampeonatos();
 
       } catch (error) {
         console.error('Erro ao excluir campeonato do Firebase:', error);

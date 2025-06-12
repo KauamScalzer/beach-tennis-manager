@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule, LoadingController, AlertController, Platform } from '@ionic/angular'; // 🔥 Importe Platform
+import { IonicModule, LoadingController, AlertController, Platform } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -10,7 +10,7 @@ import {
   arrowBackOutline,
   arrowForwardOutline,
   trophyOutline,
-  copyOutline, // 🔥 Importe este novo ícone (ou 'shareOutline')
+  copyOutline,
 } from 'ionicons/icons';
 
 import { IMatch } from '../interfaces/imatch';
@@ -23,7 +23,7 @@ addIcons({
   'arrow-back-outline': arrowBackOutline,
   'arrow-forward-outline': arrowForwardOutline,
   'trophy-outline': trophyOutline,
-  'copy-outline': copyOutline, // 🔥 Adicione este ícone
+  'copy-outline': copyOutline,
 });
 
 interface ITime {
@@ -82,7 +82,7 @@ export class RodadaPage implements OnInit {
     private matchService: MatchService,
     private campeonatoService: CampeonatoService,
     private authService: AuthService,
-    private platform: Platform, // 🔥 Injete Platform
+    private platform: Platform,
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -110,7 +110,6 @@ export class RodadaPage implements OnInit {
         this.faseAtualNome = campeonato.faseAtual || this.orderedPhases[0];
         this.faseAtualOrdem = this.phaseOrderMap[this.faseAtualNome];
         this.isOwner = this.currentUserUid === campeonato.userId;
-        // Se a fase atual do campeonato não estiver definida, usa a primeira fase mapeada
         if (!campeonato.faseAtual) {
           console.warn('Campeonato sem faseAtual definida. Redirecionando para a primeira fase mapeada.');
           this.router.navigate(['/publico', publicAccessCode, this.orderedPhases[0]], { replaceUrl: true });
@@ -411,7 +410,6 @@ export class RodadaPage implements OnInit {
     }
   }
 
-  // 🔥 NOVO MÉTODO: Copiar o link público
   async copyPublicLink() {
     if (!this.campeonatoId) {
       const alert = await this.alertCtrl.create({
@@ -440,18 +438,10 @@ export class RodadaPage implements OnInit {
         return;
       }
 
-      // Obtém o host atual da URL (ex: "http://localhost:8100" ou "https://seusite.com")
       const currentHost = window.location.origin;
       const publicLink = `${currentHost}/publico/${campeonato.codigoAcessoPublico}`;
 
-      // Tenta copiar para a área de transferência
       if (this.platform.is('capacitor') || this.platform.is('cordova')) {
-        // Para aplicativos nativos (Capacitor/Cordova)
-        // Você precisaria de um plugin como '@capacitor/clipboard'
-        // npm install @capacitor/clipboard
-        // npx cap sync
-        // import { Clipboard } from '@capacitor/clipboard';
-        // await Clipboard.write({ string: publicLink });
         const alert = await this.alertCtrl.create({
           header: 'Link Copiado!',
           message: `Link: ${publicLink}. Funcionalidade de cópia em app nativo requer plugin.`,
@@ -459,7 +449,6 @@ export class RodadaPage implements OnInit {
         });
         await alert.present();
       } else if (navigator.clipboard) {
-        // Para navegadores web modernos
         await navigator.clipboard.writeText(publicLink);
         const alert = await this.alertCtrl.create({
           header: 'Link Copiado!',
@@ -468,7 +457,6 @@ export class RodadaPage implements OnInit {
         });
         await alert.present();
       } else {
-        // Fallback para navegadores antigos ou onde a API Clipboard não está disponível
         const dummyElement = document.createElement('textarea');
         document.body.appendChild(dummyElement);
         dummyElement.value = publicLink;

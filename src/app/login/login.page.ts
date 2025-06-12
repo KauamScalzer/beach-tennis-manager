@@ -5,15 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import {
   logoGoogle,
-  eyeOutline, // 🔥 Importe este ícone para o botão de visualização
+  eyeOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth/auth.service';
 import { Router } from '@angular/router';
-import { CampeonatoService } from '../services/campeonato/campeonato.service'; // 🔥 Importe o CampeonatoService
+import { CampeonatoService } from '../services/campeonato/campeonato.service';
 
 addIcons({
   'logo-google': logoGoogle,
-  'eye-outline': eyeOutline, // 🔥 Adicione este ícone
+  'eye-outline': eyeOutline,
 });
 
 @Component({
@@ -29,10 +29,10 @@ export class LoginPage {
     private router: Router,
     private loadingController: LoadingController,
     private alertController: AlertController,
-    private campeonatoService: CampeonatoService, // 🔥 Injete o CampeonatoService
+    private campeonatoService: CampeonatoService,
   ) {}
 
-  codigo = ''; // Corresponde ao ngModel do input
+  codigo = '';
 
   async signInWithGoogle() {
     const loading = await this.loadingController.create({
@@ -74,9 +74,8 @@ export class LoginPage {
     }
   }
 
-  // 🔥 NOVO MÉTODO: Acessar campeonato pelo código público
   async viewCampeonatoByCode() {
-    const trimmedCodigo = this.codigo.trim(); // Remove espaços em branco
+    const trimmedCodigo = this.codigo.trim();
     if (!trimmedCodigo) {
       const alert = await this.alertController.create({
         header: 'Atenção',
@@ -93,12 +92,10 @@ export class LoginPage {
     await loading.present();
 
     try {
-      // Busca o campeonato usando o código de acesso público
       const campeonato = await this.campeonatoService.getCampeonatoByCodigoAcesso(trimmedCodigo);
 
-      if (campeonato && campeonato.faseAtual) { // Verifica se o campeonato existe e já tem uma fase iniciada
+      if (campeonato && campeonato.faseAtual) {
         console.log('Campeonato encontrado pelo código:', campeonato);
-        // Redireciona para a rota pública da RodadaPage
         this.router.navigate(['/publico', trimmedCodigo]);
       } else if (campeonato && !campeonato.faseAtual) {
         const alert = await this.alertController.create({

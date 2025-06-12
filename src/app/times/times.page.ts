@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { addOutline, play, arrowBackOutline, createOutline, trashOutline } from 'ionicons/icons'; // Adicione createOutline e trashOutline
+import { addOutline, play, arrowBackOutline, createOutline, trashOutline } from 'ionicons/icons';
 import { HeaderComponent } from '../header/header.component';
 
 import { TimeService } from '../services/time/time.service';
@@ -18,8 +18,8 @@ addIcons({
   'add-outline': addOutline,
   'play': play,
   'arrow-back-outline': arrowBackOutline,
-  'create-outline': createOutline, // Adicione o ícone de editar
-  'trash-outline': trashOutline,   // Adicione o ícone de excluir
+  'create-outline': createOutline,
+  'trash-outline': trashOutline,
 });
 
 @Component({
@@ -72,19 +72,16 @@ export class TimesPage implements OnInit {
     this.activatedRoute.paramMap.subscribe(async params => {
       this.campeonatoId = params.get('campeonatoId');
       if (this.campeonatoId) {
-        console.log('ID do Campeonato:', this.campeonatoId);
         await this.loadCampeonatoData();
 
         this.activatedRoute.queryParams.subscribe(queryParams => {
           const forceShowTeams = queryParams['showTeams'];
 
           if (this.hasStarted && this.campeonato?.faseAtual && !forceShowTeams) {
-            console.log('Campeonato já iniciado. Redirecionando para rodadas...');
             this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual], { replaceUrl: true });
           }
         });
       } else {
-        console.warn('Nenhum ID de campeonato fornecido na rota.');
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     });
@@ -104,7 +101,6 @@ export class TimesPage implements OnInit {
       this.campeonato = await this.campeonatoService.getCampeonatoById(this.campeonatoId);
       if (this.campeonato) {
         this.hasStarted = this.campeonato.status === 'em_andamento' || this.campeonato.status === 'finalizado';
-        console.log('Campeonato carregado:', this.campeonato);
         await this.loadTimes();
       } else {
         await Swal.fire({
@@ -116,7 +112,6 @@ export class TimesPage implements OnInit {
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do campeonato:', error);
       await Swal.fire({
         icon: 'error',
         title: 'Erro',
@@ -130,14 +125,11 @@ export class TimesPage implements OnInit {
 
   async loadTimes() {
     if (!this.campeonatoId) {
-      console.warn('Não é possível carregar times: Campeonato ID não definido.');
       return;
     }
     try {
       this.equipes = await this.timeService.getTimes(this.campeonatoId);
-      console.log('Equipes carregadas para o campeonato', this.campeonatoId, ':', this.equipes);
     } catch (error) {
-      console.error('Erro ao carregar equipes:', error);
       await Swal.fire({
         icon: 'error',
         title: 'Erro',
@@ -149,11 +141,6 @@ export class TimesPage implements OnInit {
       });
     }
   }
-
-  // Remova ou adapte getEquipeNomes() se não for mais necessário
-  // getEquipeNomes(): string[] {
-  //   return this.equipes.map(e => e.nome);
-  // }
 
   async adicionarEquipe() {
     if (this.hasStarted) {
@@ -170,7 +157,6 @@ export class TimesPage implements OnInit {
     }
 
     if (!this.campeonatoId) {
-      console.error('Não é possível adicionar equipe: Campeonato ID não definido.');
       await Swal.fire({
         icon: 'error',
         title: 'Erro',
@@ -241,13 +227,9 @@ export class TimesPage implements OnInit {
 
       try {
         const id = await this.timeService.addTime(formValues, this.campeonatoId);
-        console.log('Equipe salva no Firebase com ID:', id);
-
         await this.loadTimes();
 
       } catch (error) {
-        console.error('Erro ao salvar equipe no Firebase:', error);
-
         await Swal.fire({
           icon: 'error',
           title: 'Erro',
@@ -263,8 +245,6 @@ export class TimesPage implements OnInit {
       } finally {
         Swal.close();
       }
-    } else {
-      console.log('Criação de equipe cancelada ou sem dados válidos.');
     }
   }
 
@@ -273,7 +253,6 @@ export class TimesPage implements OnInit {
       if (this.campeonato?.faseAtual) {
         this.router.navigate(['/rodada', this.campeonatoId, this.campeonato.faseAtual]);
       } else {
-        console.error('Campeonato iniciado, mas faseAtual não definida. Redirecionando para campeonatos.');
         this.router.navigateByUrl('/campeonatos', { replaceUrl: true });
       }
     } else {
@@ -317,7 +296,6 @@ export class TimesPage implements OnInit {
 
     try {
       const shuffledTeams = [...this.equipes].sort(() => Math.random() - 0.5);
-      console.log('Equipes embaralhadas:', shuffledTeams.map(t => t.nome));
 
       const numTeams = shuffledTeams.length;
       let effectiveNumTeamsForRound = 2;
@@ -330,7 +308,6 @@ export class TimesPage implements OnInit {
 
       if (!this.orderPhaseMap[initialPhaseOrder]) {
           initialPhaseOrder = Math.max(...Object.values(this.phaseOrderMap));
-          console.warn(`Número de times (${numTeams}) excede fases mapeadas. Usando a fase inicial mais profunda: ${this.orderPhaseMap[initialPhaseOrder]}`);
       }
 
       const initialPhaseName = this.orderPhaseMap[initialPhaseOrder];
@@ -397,20 +374,9 @@ export class TimesPage implements OnInit {
       }
       this.hasStarted = true;
 
-      await Swal.fire({
-        icon: 'success',
-        title: 'Sucesso!',
-        text: `Campeonato iniciado! A fase de ${initialPhaseName} foi criada.`,
-        confirmButtonText: 'OK',
-        customClass: {
-          confirmButton: 'swal-ionic-button'
-        }
-      });
-
       this.router.navigate(['/rodada', this.campeonatoId, initialPhaseName]);
 
     } catch (error) {
-      console.error('Erro ao iniciar campeonato ou criar tabela inicial:', error);
       await Swal.fire({
         icon: 'error',
         title: 'Erro',
@@ -425,13 +391,8 @@ export class TimesPage implements OnInit {
     }
   }
 
-  abrirEquipe(equipe: ITime) { // Altere para receber o objeto ITime completo
-    console.log('Abrindo detalhes da equipe:', equipe.nome, 'ID:', equipe.id);
-    // Implemente a navegação ou modal para detalhes da equipe aqui
-    // Ex: this.router.navigate(['/equipe-detalhes', equipe.id]);
+  abrirEquipe(equipe: ITime) {
   }
-
-  // --- Novos métodos para Editar e Excluir ---
 
   async editarEquipe(equipe: ITime) {
     if (this.hasStarted) {
@@ -506,11 +467,9 @@ export class TimesPage implements OnInit {
 
       try {
         await this.timeService.updateTime(equipe.id, formValues);
-        console.log('Equipe atualizada no Firebase:', equipe.id);
-        await this.loadTimes(); // Recarrega as equipes após atualizar
+        await this.loadTimes();
 
       } catch (error) {
-        console.error('Erro ao atualizar equipe no Firebase:', error);
         await Swal.fire({
           icon: 'error',
           title: 'Erro',
@@ -526,7 +485,6 @@ export class TimesPage implements OnInit {
         Swal.close();
       }
     } else if (formValues && !equipe.id) {
-        console.error('ID da equipe não encontrado para atualização.');
         await Swal.fire({
             icon: 'error',
             title: 'Erro',
@@ -538,8 +496,6 @@ export class TimesPage implements OnInit {
             },
             buttonsStyling: false
         });
-    } else {
-        console.log('Edição de equipe cancelada ou sem dados válidos.');
     }
   }
 
@@ -558,7 +514,6 @@ export class TimesPage implements OnInit {
     }
 
     if (!equipe.id) {
-      console.error('ID da equipe não encontrado para exclusão.');
       await Swal.fire({
         icon: 'error',
         title: 'Erro',
@@ -581,7 +536,7 @@ export class TimesPage implements OnInit {
       customClass: {
         container: 'swal2-container',
         popup: 'swal-ionic-popup',
-        confirmButton: 'swal-ionic-button swal-confirm-danger', // Nova classe para botão de exclusão
+        confirmButton: 'swal-ionic-button swal-confirm-danger',
         cancelButton: 'swal-ionic-button swal-cancel'
       },
       buttonsStyling: false,
@@ -602,13 +557,8 @@ export class TimesPage implements OnInit {
 
       try {
         await this.timeService.deleteTime(equipe.id);
-        console.log('Equipe excluída do Firebase:', equipe.id);
-        await this.loadTimes(); // Recarrega as equipes após excluir
-        
-        
-
+        await this.loadTimes();
       } catch (error) {
-        console.error('Erro ao excluir equipe do Firebase:', error);
         await Swal.fire({
           icon: 'error',
           title: 'Erro',
@@ -623,8 +573,6 @@ export class TimesPage implements OnInit {
       } finally {
         Swal.close();
       }
-    } else {
-      console.log('Exclusão de equipe cancelada.');
     }
   }
 }
